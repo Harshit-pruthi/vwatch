@@ -442,23 +442,6 @@
       color: var(--text-secondary);
     }
 
-    /* Progress bar for continue watching */
-    .progress-bar {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 4px;
-      background: rgba(255, 255, 255, 0.2);
-    }
-
-    .progress-fill {
-      height: 100%;
-      background: var(--gradient);
-      width: 0%;
-      transition: width 0.3s ease;
-    }
-
     /* Loading animation */
     .loading {
       display: flex;
@@ -553,13 +536,13 @@
   </div>
 
   <header>
-    <a href="home.html" class="logo">
+    <a href="#" class="logo">
       <i class="fas fa-play-circle"></i>
       <span>DriveStream</span>
     </a>
     
     <nav class="nav-links">
-      <a href="home.html">Home</a>
+      <a href="#">Home</a>
       <a href="#">Movies</a>
       <a href="#">TV Shows</a>
       <a href="#">New</a>
@@ -621,7 +604,6 @@
     let currentSeries = null;
     let currentEpisodes = [];
     let currentIndex = -1;
-    let watchProgressInterval = null;
 
     const status = document.getElementById("status");
     const list = document.getElementById("list");
@@ -694,24 +676,16 @@
         const isFolder = file.mimeType === "application/vnd.google-apps.folder";
         const thumbnailUrl = file.thumbnailLink || '';
         
-        // Check if we have progress for this item
-        const progress = getWatchProgress(file.id);
-        
         card.innerHTML = `
           <div class="card-thumb" style="background-image: ${thumbnailUrl ? `url(${thumbnailUrl})` : 'none'};">
             ${!thumbnailUrl ? `<i class="${isFolder ? 'fas fa-folder' : 'fas fa-play'} fa-2x"></i>` : ''}
-            ${progress > 0 ? `
-              <div class="progress-bar">
-                <div class="progress-fill" style="width: ${progress}%"></div>
-              </div>
-            ` : ''}
             <div class="play-overlay">
               <i class="fas fa-play"></i>
             </div>
           </div>
           <div class="card-content">
             <h3 class="card-title">${file.name}</h3>
-            <p class="card-info">${isFolder ? 'Series' : 'Movie'} ${progress > 0 ? `• ${Math.round(progress)}% watched` : ''}</p>
+            <p class="card-info">${isFolder ? 'Series' : 'Movie'}</p>
           </div>
         `;
         
@@ -741,7 +715,7 @@
           return; 
         }
 
-        currentSeries = { id: folderId, name: seriesName };
+        currentSeries = seriesName;
         currentEpisodes = episodes.sort((a,b)=>a.name.localeCompare(b.name));
         currentIndex = 0;
         
@@ -760,17 +734,11 @@
     function renderEpisodesSidebar() {
       episodesList.innerHTML = "";
       currentEpisodes.forEach((ep, i) => {
-        const progress = getWatchProgress(ep.id);
         const episodeCard = document.createElement("div");
         episodeCard.className = `episode-card ${i === currentIndex ? 'active' : ''}`;
         episodeCard.innerHTML = `
           <div class="episode-name">${ep.name}</div>
-          <div class="episode-meta">Episode ${i + 1} ${progress > 0 ? `• ${Math.round(progress)}% watched` : ''}</div>
-          ${progress > 0 ? `
-            <div class="progress-bar">
-              <div class="progress-fill" style="width: ${progress}%"></div>
-            </div>
-          ` : ''}
+          <div class="episode-meta">Episode ${i + 1}</div>
         `;
         episodeCard.onclick = () => { 
           currentIndex = i; 
@@ -794,9 +762,6 @@
       playerFrame.src = url;
       status.textContent = `Now playing: ${ep.name}`;
       renderNextButton();
-      
-      // Start tracking watch progress
-      startTrackingProgress(ep.id, currentSeries ? currentSeries.id : null);
     }
 
     // Standalone movie
@@ -814,9 +779,6 @@
       playerFrame.src = url;
       status.textContent = `Now playing: ${name}`;
       nextControls.innerHTML = "";
-      
-      // Start tracking watch progress
-      startTrackingProgress(fileId, null);
     }
 
     // Next episode controls
@@ -857,62 +819,9 @@
       backButton.style.display = 'none';
       episodesList.innerHTML = '<div class="episode-card">Select a series to view episodes</div>';
       
-      // Stop tracking progress
-      stopTrackingProgress();
-      
       // Reload library
       loadLibrary();
     });
-
-    // Watch progress tracking functions
-    function startTrackingProgress(videoId, seriesId) {
-      // Clear any existing interval
-      stopTrackingProgress();
-      
-      // Set up new interval to track progress
-      watchProgressInterval = setInterval(() => {
-        // Simulate progress (in a real app, you would track actual progress)
-        // For demonstration, we'll just increment progress by 1% every 5 seconds
-        const currentProgress = getWatchProgress(videoId);
-        if (currentProgress < 100) {
-          saveWatchProgress(videoId, seriesId, currentProgress + 1);
-        } else {
-          stopTrackingProgress();
-        }
-      }, 5000); // Update every 5 seconds
-    }
-    
-    function stopTrackingProgress() {
-      if (watchProgressInterval) {
-        clearInterval(watchProgressInterval);
-        watchProgressInterval = null;
-      }
-    }
-    
-    function saveWatchProgress(videoId, seriesId, progress) {
-      // Get existing progress data
-      let watchHistory = JSON.parse(localStorage.getItem('watchHistory') || '{}');
-      
-      // Update progress for this video
-      if (!watchHistory[videoId]) {
-        watchHistory[videoId] = {
-          progress: 0,
-          lastWatched: Date.now(),
-          seriesId: seriesId
-        };
-      }
-      
-      watchHistory[videoId].progress = progress;
-      watchHistory[videoId].lastWatched = Date.now();
-      
-      // Save back to localStorage
-      localStorage.setItem('watchHistory', JSON.stringify(watchHistory));
-    }
-    
-    function getWatchProgress(videoId) {
-      const watchHistory = JSON.parse(localStorage.getItem('watchHistory') || '{}');
-      return watchHistory[videoId] ? watchHistory[videoId].progress : 0;
-    }
 
     window.gapiLoaded = gapiLoaded;
   </script>
