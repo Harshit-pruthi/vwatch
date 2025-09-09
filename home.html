@@ -297,6 +297,32 @@
       opacity: 1;
     }
 
+    .progress-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--gradient);
+      transition: width 0.3s ease;
+    }
+
+    .continue-label {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      color: var(--text-primary);
+    }
+
     .play-overlay {
       position: absolute;
       top: 50%;
@@ -391,6 +417,7 @@
       padding: 40px;
       text-align: center;
       margin-top: 60px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .footer-links {
@@ -525,6 +552,18 @@
   </div>
 
   <div class="content-wrapper">
+    <!-- Continue Watching Section -->
+    <div class="library-section" id="continueWatchingSection" style="display: none;">
+      <div class="section-header">
+        <h2 class="section-title">Continue Watching</h2>
+        <a href="#" class="view-all">View All</a>
+      </div>
+      
+      <div id="continue-watching-list" class="content-grid">
+        <!-- Continue watching content will be loaded here -->
+      </div>
+    </div>
+    
     <div class="categories">
       <button class="category-btn active" data-category="all">All Content</button>
       <button class="category-btn" data-category="series">Series</button>
@@ -569,10 +608,35 @@
     <p class="copyright">© 2023 DriveStream. All rights reserved.</p>
   </footer>
 
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+
   <script>
-    // ==== CONFIG ====
-    const API_KEY   = "AIzaSyARMW-kuCFgiGQuvPx43XF4OoViAgP8IIg";
+    // ==== FIREBASE CONFIG ====
+    const firebaseConfig = {
+      apiKey: "AIzaSyCWHM-Uh4SOuhmYEz35c3nKpsapJYwl1pE",
+      authDomain: "streamingsite-85113.firebaseapp.com",
+      projectId: "streamingsite-85113",
+      storageBucket: "streamingsite-85113.firebasestorage.app",
+      messagingSenderId: "525979195033",
+      appId: "1:525979195033:web:9aee4402a10ce9ee0c0a08",
+      measurementId: "G-9H1J1MGY2M"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const auth = firebase.auth();
+
+    // ==== DRIVE CONFIG ====
+    const API_KEY = "AIzaSyARMW-kuCFgiGQuvPx43XF4OoViAgP8IIg";
     const FOLDER_ID = "1Yr8DpaxP66ZCi_NEoKclbh5BdieBhn0S"; // Main library folder
+
+    // Current user state
+    let currentUser = null;
+    let continueWatching = [];
 
     // Header scroll effect
     window.addEventListener('scroll', () => {
@@ -599,12 +663,156 @@
         });
         button.classList.add('active');
         
-        // In a real app, you would filter content based on category
         const category = button.getAttribute('data-category');
         console.log(`Filtering by category: ${category}`);
         // filterContent(category);
       });
     });
+
+    // Initialize authentication
+    function initAuth() {
+      auth.onAuthStateChanged((user) => {
+        if (user) {
+          currentUser = user;
+          console.log("User signed in:", user.uid);
+          loadContinueWatching();
+          loadLibrary();
+        } else {
+          console.log("No user signed in");
+          // Use anonymous authentication for demo purposes
+          auth.signInAnonymously()
+            .then(() => {
+              console.log("Signed in anonymously");
+            })
+            .catch((error) => {
+              console.error("Anonymous sign-in error:", error);
+              loadLibrary(); // Load library even without auth
+            });
+        }
+      });
+    }
+
+    // Load user's continue watching data
+    async function loadContinueWatching() {
+      if (!currentUser) return;
+      
+      try {
+        const snapshot = await db.collection('continueWatching')
+          .where('userId', '==', currentUser.uid)
+          .orderBy('timestamp', 'desc')
+          .limit(10)
+          .get();
+        
+        continueWatching = [];
+        snapshot.forEach(doc => {
+          continueWatching.push({ id: doc.id, ...doc.data() });
+        });
+        
+        renderContinueWatching();
+      } catch (error) {
+        console.error("Error loading continue watching:", error);
+      }
+    }
+
+    // Render continue watching items
+    function renderContinueWatching() {
+      const container = document.getElementById('continue-watching-list');
+      const section = document.getElementById('continueWatchingSection');
+      
+      if (continueWatching.length === 0) {
+        section.style.display = 'none';
+        return;
+      }
+      
+      section.style.display = 'block';
+      container.innerHTML = '';
+      
+      continueWatching.forEach((item, index) => {
+        const card = document.createElement("div");
+        card.className = "content-card fade-in";
+        card.style.animationDelay = `${index * 0.1}s`;
+        
+        const progressPercent = item.duration ? (item.currentTime / item.duration) * 100 : 0;
+        
+        card.innerHTML = `
+          <div class="card-thumb" style="background-image: ${item.thumbnailUrl ? `url(${item.thumbnailUrl})` : 'none'};">
+            ${!item.thumbnailUrl ? `<i class="fas fa-play fa-2x"></i>` : ''}
+            <div class="continue-label">Continue Watching</div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: ${progressPercent}%"></div>
+            </div>
+            <div class="play-overlay">
+              <i class="fas fa-play"></i>
+            </div>
+          </div>
+          <div class="card-content">
+            <h3 class="card-title">${item.videoName}</h3>
+            <p class="card-info">${formatTime(item.currentTime)} / ${formatTime(item.duration)}</p>
+          </div>
+        `;
+        
+        card.onclick = () => {
+          // Navigate to streaming page with the video and timestamp
+          window.location.href = `streaming.html?video=${item.videoId}&t=${Math.floor(item.currentTime)}`;
+        };
+        
+        container.appendChild(card);
+      });
+    }
+
+    // Format time function (seconds to HH:MM:SS or MM:SS)
+    function formatTime(seconds) {
+      if (!seconds) return "0:00";
+      
+      const hours = Math.floor(seconds / 3600);
+      const minutes = Math.floor((seconds % 3600) / 60);
+      const secs = Math.floor(seconds % 60);
+      
+      if (hours > 0) {
+        return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+      } else {
+        return `${minutes}:${secs.toString().padStart(2, '0')}`;
+      }
+    }
+
+    // Save progress to Firestore
+    async function saveProgress(videoId, videoName, currentTime, duration, thumbnailUrl = null) {
+      if (!currentUser) return;
+      
+      try {
+        // Check if already exists
+        const existingQuery = await db.collection('continueWatching')
+          .where('userId', '==', currentUser.uid)
+          .where('videoId', '==', videoId)
+          .get();
+        
+        if (!existingQuery.empty) {
+          // Update existing record
+          const docId = existingQuery.docs[0].id;
+          await db.collection('continueWatching').doc(docId).update({
+            currentTime,
+            duration,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+          });
+        } else {
+          // Create new record
+          await db.collection('continueWatching').add({
+            userId: currentUser.uid,
+            videoId,
+            videoName,
+            currentTime,
+            duration,
+            thumbnailUrl,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+          });
+        }
+        
+        // Refresh continue watching list
+        loadContinueWatching();
+      } catch (error) {
+        console.error("Error saving progress:", error);
+      }
+    }
 
     // Load GAPI
     function gapiLoaded() { 
@@ -616,7 +824,7 @@
         apiKey: API_KEY, 
         discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"] 
       });
-      loadLibrary();
+      // Library will be loaded after auth initialization
     }
 
     // Load library (Movies + Series folders)
@@ -683,10 +891,8 @@
         
         card.onclick = () => {
           if (isFolder) {
-            // Navigate to series page
             window.location.href = `streaming.html?series=${file.id}`;
           } else {
-            // Play the video directly
             window.location.href = `streaming.html?video=${file.id}`;
           }
         };
@@ -732,10 +938,8 @@
         
         card.onclick = () => {
           if (isFolder) {
-            // Navigate to series page
             window.location.href = `streaming.html?series=${file.id}`;
           } else {
-            // Play the video directly
             window.location.href = `streaming.html?video=${file.id}`;
           }
         };
@@ -750,8 +954,12 @@
       return new Date(dateString).toLocaleDateString(undefined, options);
     }
 
-    window.gapiLoaded = gapiLoaded;
+    // Initialize the application
+    window.onload = function() {
+      initAuth();
+      gapiLoaded();
+    };
   </script>
-  <script async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>
+  <script async defer src="https://apis.google.com/js/api.js"></script>
 </body>
 </html>
