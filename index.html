@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Drive Streamer - Home</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #ff2c54;
+      --primary-dark: #e01e4c;
+      --secondary: #00a2ff;
+      --dark-bg: #0c0c0c;
+      --dark-card: #141414;
+      --dark-hover: #1f1f1f;
+      --text-primary: #ffffff;
+      --text-secondary: #a0a0a0;
+      --transition: all 0.3s ease;
+      --gradient: linear-gradient(135deg, var(--primary), var(--secondary));
+      --shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+      --radius: 12px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--dark-bg);
+      color: var(--text-primary);
+      overflow-x: hidden;
+    }
+
+    /* Header Styles */
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 40px;
+      background: linear-gradient(to bottom, rgba(12, 12, 12, 0.95), transparent);
+      z-index: 1000;
+      transition: var(--transition);
+    }
+
+    header.scrolled {
+      background: rgba(12, 12, 12, 0.98);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+
+    .logo i {
+      color: var(--primary);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+    }
+
+    .nav-links a {
+      color: var(--text-primary);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 16px;
+      transition: var(--transition);
+      position: relative;
+    }
+
+    .nav-links a:after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 0;
+      height: 3px;
+      background: var(--gradient);
+      border-radius: 3px;
+      transition: var(--transition);
+    }
+
+    .nav-links a:hover:after {
+      width: 100%;
+    }
+
+    .nav-links a.active:after {
+      width: 100%;
+    }
+
+    .user-actions {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .search-box {
+      position: relative;
+    }
+
+    .search-box input {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      border-radius: 20px;
+      padding: 10px 20px 10px 40px;
+      color: var(--text-primary);
+      width: 220px;
+      transition: var(--transition);
+    }
+
+    .search-box input:focus {
+      outline: none;
+      background: rgba(255, 255, 255, 0.15);
+      width: 260px;
+    }
+
+    .search-box i {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-secondary);
+    }
+
+    .user-profile {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .user-profile:hover {
+      transform: scale(1.05);
+    }
+
+    /* Hero Section */
+    .hero {
+      height: 80vh;
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 40px;
+    }
+
+    .hero-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to right, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.4)), url('https://source.unsplash.com/random/1920x1080/?movie') no-repeat center center/cover;
+      filter: blur(4px);
+      z-index: -1;
+    }
+
+    .hero-content {
+      max-width: 600px;
+      position: absolute;
+      bottom: 20%;
+      left: 40px;
+      animation: fadeInUp 1s ease;
+    }
+
+    .hero-badge {
+      background: var(--gradient);
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 600;
+      display: inline-block;
+      margin-bottom: 16px;
+    }
+
+    .hero-title {
+      font-size: 48px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      line-height: 1.2;
+    }
+
+    .hero-desc {
+      font-size: 18px;
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+    }
+
+    .btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 28px;
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+      transition: var(--transition);
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--gradient);
+      color: white;
+      border: none;
+      box-shadow: 0 4px 15px rgba(255, 44, 84, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 44, 84, 0.4);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-primary);
+      border: none;
+      backdrop-filter: blur(10px);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Content Sections */
+    .container {
+      padding: 0 40px;
+      margin-bottom: 60px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-size: 24px;
+      font-weight: 600;
+      position: relative;
+      padding-left: 15px;
+    }
+
+    .section-title:before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 5px;
+      height: 24px;
+      background: var(--gradient);
+      border-radius: 10px;
+    }
+
+    .view-all {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 14px;
+      transition: var(--transition);
+    }
+
+    .view-all:hover {
+      color: var(--primary);
+    }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+    }
+
+    .content-card {
+      background: var(--dark-card);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: var(--transition);
+      cursor: pointer;
+      position: relative;
+      box-shadow: var(--shadow);
+    }
+
+    .content-card:hover {
+      transform: translateY(-10px) scale(1.02);
+    }
+
+    .card-thumb {
+      width: 100%;
+      height: 250px;
+      background: #222;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card-thumb:after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+      opacity: 0;
+      transition: var(--transition);
+    }
+
+    .content-card:hover .card-thumb:after {
+      opacity: 1;
+    }
+
+    .play-overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 60px;
+      height: 60px;
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 20px;
+      opacity: 0;
+      transition: var(--transition);
+      z-index: 2;
+    }
+
+    .content-card:hover .play-overlay {
+      opacity: 1;
+    }
+
+    .card-content {
+      padding: 15px;
+    }
+
+    .card-title {
+      font-weight: 600;
+      margin-bottom: 8px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .card-info {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .card-badge {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: var(--primary);
+      color: white;
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      z-index: 2;
+    }
+
+    /* Featured Section */
+    .featured-section {
+      margin: 40px 0;
+    }
+
+    .featured-header {
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .featured-title {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .featured-subtitle {
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Category Filters */
+    .category-filters {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 30px;
+      overflow-x: auto;
+      padding: 5px 0;
+      scrollbar-width: none;
+    }
+
+    .category-filters::-webkit-scrollbar {
+      display: none;
+    }
+
+    .filter-btn {
+      padding: 8px 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      border-radius: 20px;
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: var(--transition);
+      white-space: nowrap;
+    }
+
+    .filter-btn.active, .filter-btn:hover {
+      background: var(--gradient);
+    }
+
+    /* Footer */
+    footer {
+      background: var(--dark-card);
+      padding: 60px 40px 30px;
+      margin-top: 60px;
+    }
+
+    .footer-content {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 40px;
+      margin-bottom: 40px;
+    }
+
+    .footer-column h3 {
+      font-size: 18px;
+      margin-bottom: 20px;
+      position: relative;
+      padding-bottom: 10px;
+    }
+
+    .footer-column h3:after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 30px;
+      height: 3px;
+      background: var(--gradient);
+      border-radius: 3px;
+    }
+
+    .footer-column ul {
+      list-style: none;
+    }
+
+    .footer-column ul li {
+      margin-bottom: 12px;
+    }
+
+    .footer-column a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    .footer-column a:hover {
+      color: var(--primary);
+    }
+
+    .social-links {
+      display: flex;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .social-links a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      transition: var(--transition);
+    }
+
+    .social-links a:hover {
+      background: var(--gradient);
+      transform: translateY(-3px);
+    }
+
+    .copyright {
+      text-align: center;
+      padding-top: 30px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .fade-in {
+      animation: fadeIn 0.5s ease forwards;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1200px) {
+      .content-grid {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      }
+    }
+
+    @media (max-width: 992px) {
+      .hero-content {
+        left: 20px;
+        right: 20px;
+        max-width: 100%;
+      }
+      
+      .hero-title {
+        font-size: 36px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      header {
+        padding: 15px 20px;
+      }
+      
+      .nav-links {
+        display: none;
+      }
+      
+      .search-box input {
+        width: 160px;
+      }
+      
+      .search-box input:focus {
+        width: 180px;
+      }
+      
+      .container {
+        padding: 0 20px;
+      }
+      
+      .hero {
+        height: 70vh;
+      }
+      
+      .hero-title {
+        font-size: 32px;
+      }
+      
+      .hero-desc {
+        font-size: 16px;
+      }
+      
+      .content-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      }
+      
+      .card-thumb {
+        height: 200px;
+      }
+      
+      .btn {
+        padding: 12px 20px;
+        font-size: 14px;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .hero-actions {
+        flex-direction: column;
+        gap: 12px;
+      }
+      
+      .hero-content {
+        text-align: center;
+        bottom: 10%;
+      }
+      
+      .footer-content {
+        grid-template-columns: 1fr;
+        gap: 30px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="#" class="logo">
+      <i class="fas fa-play-circle"></i>
+      <span>DriveStream</span>
+    </a>
+    
+    <nav class="nav-links">
+      <a href="#" class="active">Home</a>
+      <a href="#">Movies</a>
+      <a href="#">TV Shows</a>
+      <a href="#">New</a>
+      <a href="#">My List</a>
+    </nav>
+    
+    <div class="user-actions">
+      <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" placeholder="Search...">
+      </div>
+      
+      <div class="user-profile">
+        <i class="fas fa-user"></i>
+      </div>
+    </div>
+  </header>
+
+  <div class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <div class="hero-badge">New Episode</div>
+      <h1 class="hero-title">Stranger Things</h1>
+      <p class="hero-desc">When a young boy vanishes, a small town uncovers a mystery involving secret experiments, terrifying supernatural forces and one strange little girl.</p>
+      <div class="hero-actions">
+        <a href="#" class="btn btn-primary"><i class="fas fa-play"></i> Play Now</a>
+        <a href="#" class="btn btn-secondary"><i class="fas fa-plus"></i> My List</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="category-filters">
+      <button class="filter-btn active">All</button>
+      <button class="filter-btn">Movies</button>
+      <button class="filter-btn">TV Shows</button>
+      <button class="filter-btn">Action</button>
+      <button class="filter-btn">Comedy</button>
+      <button class="filter-btn">Drama</button>
+      <button class="filter-btn">Sci-Fi</button>
+      <button class="filter-btn">Horror</button>
+    </div>
+
+    <div class="section-header">
+      <h2 class="section-title">Featured Content</h2>
+      <a href="#" class="view-all">View All</a>
+    </div>
+    
+    <div class="content-grid" id="featuredContent">
+      <!-- Content will be loaded here -->
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Popular Series</h2>
+      <a href="#" class="view-all">View All</a>
+    </div>
+    
+    <div class="content-grid" id="seriesContent">
+      <!-- Series will be loaded here -->
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Latest Movies</h2>
+      <a href="#" class="view-all">View All</a>
+    </div>
+    
+    <div class="content-grid" id="moviesContent">
+      <!-- Movies will be loaded here -->
+    </div>
+  </div>
+
+  <div class="featured-section">
+    <div class="container">
+      <div class="featured-header">
+        <h2 class="featured-title">Browse Our Collection</h2>
+        <p class="featured-subtitle">Discover thousands of movies and TV shows to stream directly from Google Drive</p>
+      </div>
+      
+      <div class="content-grid" id="browseContent">
+        <!-- Browse content will be loaded here -->
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-content">
+      <div class="footer-column">
+        <h3>DriveStream</h3>
+        <p style="color: #a0a0a0; margin-bottom: 20px;">Stream your Google Drive content seamlessly with a premium experience.</p>
+        <div class="social-links">
+          <a href="#"><i class="fab fa-facebook-f"></i></a>
+          <a href="#"><i class="fab fa-twitter"></i></a>
+          <a href="#"><i class="fab fa-instagram"></i></a>
+          <a href="#"><i class="fab fa-youtube"></i></a>
+        </div>
+      </div>
+      
+      <div class="footer-column">
+        <h3>Navigation</h3>
+        <ul>
+          <li><a href="#">Home</a></li>
+          <li><a href="#">Movies</a></li>
+          <li><a href="#">TV Shows</a></li>
+          <li><a href="#">New Releases</a></li>
+          <li><a href="#">My List</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-column">
+        <h3>Support</h3>
+        <ul>
+          <li><a href="#">Account</a></li>
+          <li><a href="#">Help Center</a></li>
+          <li><a href="#">Contact Us</a></li>
+          <li><a href="#">Device Support</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-column">
+        <h3>Legal</h3>
+        <ul>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+          <li><a href="#">Copyright</a></li>
+          <li><a href="#">Cookie Preferences</a></li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="copyright">
+      &copy; 2023 DriveStream. All rights reserved.
+    </div>
+  </footer>
+
+  <script>
+    // ==== CONFIG ====
+    const API_KEY   = "AIzaSyARMW-kuCFgiGQuvPx43XF4OoViAgP8IIg";
+    const FOLDER_ID = "1Yr8DpaxP66ZCi_NEoKclbh5BdieBhn0S"; // Main library folder
+
+    // DOM Elements
+    const featuredContent = document.getElementById("featuredContent");
+    const seriesContent = document.getElementById("seriesContent");
+    const moviesContent = document.getElementById("moviesContent");
+    const browseContent = document.getElementById("browseContent");
+
+    // Header scroll effect
+    window.addEventListener('scroll', () => {
+      const header = document.querySelector('header');
+      if (window.scrollY > 50) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    });
+
+    // Load GAPI
+    function gapiLoaded() { 
+      gapi.load('client', initClient); 
+    }
+
+    async function initClient() {
+      await gapi.client.init({ 
+        apiKey: API_KEY, 
+        discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"] 
+      });
+      loadLibrary();
+    }
+
+    // Load library (Movies + Series folders)
+    async function loadLibrary() {
+      try {
+        const res = await gapi.client.drive.files.list({
+          q: `'${FOLDER_ID}' in parents and trashed=false`,
+          fields: "files(id,name,mimeType)",
+          orderBy: "name",
+        });
+        const files = res.result.files || [];
+        renderLibrary(files);
+      } catch (e) {
+        console.error("Drive API error", e);
+      }
+    }
+
+    function renderLibrary(files) {
+      if (!files.length) {
+        featuredContent.innerHTML = "<p style='grid-column: 1 / -1; text-align: center; padding: 40px;'>No content found in your library.</p>";
+        return;
+      }
+      
+      // Clear previous content
+      featuredContent.innerHTML = "";
+      seriesContent.innerHTML = "";
+      moviesContent.innerHTML = "";
+      browseContent.innerHTML = "";
+      
+      // Separate folders (series) and files (movies)
+      const series = [];
+      const movies = [];
+      
+      files.forEach((file, index) => {
+        const isFolder = file.mimeType === "application/vnd.google-apps.folder";
+        
+        const card = document.createElement("div");
+        card.className = "content-card fade-in";
+        card.style.animationDelay = `${index * 0.1}s`;
+        
+        card.innerHTML = `
+          <div class="card-thumb">
+            <i class="${isFolder ? 'fas fa-folder' : 'fas fa-play'} fa-2x"></i>
+            <div class="play-overlay">
+              <i class="fas fa-play"></i>
+            </div>
+            ${!isFolder ? '<div class="card-badge">Movie</div>' : '<div class="card-badge">Series</div>'}
+          </div>
+          <div class="card-content">
+            <h3 class="card-title">${file.name}</h3>
+            <p class="card-info">${isFolder ? 'TV Series' : 'Movie'}</p>
+          </div>
+        `;
+        
+        if (isFolder) {
+          card.onclick = () => window.location.href = `player.html?series=${file.id}&name=${encodeURIComponent(file.name)}`;
+          series.push(card);
+        } else {
+          card.onclick = () => window.location.href = `player.html?movie=${file.id}&name=${encodeURIComponent(file.name)}`;
+          movies.push(card);
+        }
+        
+        // Add to featured (first 6 items)
+        if (index < 6) {
+          featuredContent.appendChild(card.cloneNode(true));
+        }
+        
+        // Add to browse (all items)
+        browseContent.appendChild(card.cloneNode(true));
+      });
+      
+      // Add series to series section
+      series.forEach(card => {
+        seriesContent.appendChild(card);
+      });
+      
+      // Add movies to movies section
+      movies.forEach(card => {
+        moviesContent.appendChild(card);
+      });
+    }
+
+    // Category filter functionality
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    filterButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        filterButtons.forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+        // In a real app, you would filter content here
+      });
+    });
+
+    window.gapiLoaded = gapiLoaded;
+  </script>
+  <script async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>
+</body>
+</html>
