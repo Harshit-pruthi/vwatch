@@ -181,63 +181,15 @@
       display: block;
     }
 
-    .player-overlay {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      padding: 20px;
-      background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
-      opacity: 0;
-      transition: var(--transition);
-    }
-
-    .player-container:hover .player-overlay {
-      opacity: 1;
-    }
-
     #status {
       font-size: 22px;
       font-weight: 600;
-      margin-bottom: 10px;
+      margin-bottom: 20px;
       background: var(--gradient);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
-    }
-
-    .player-controls {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      margin-top: 15px;
-    }
-
-    .control-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 45px;
-      height: 45px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.1);
-      border: none;
-      color: var(--text-primary);
-      cursor: pointer;
-      transition: var(--transition);
-    }
-
-    .control-btn:hover {
-      background: rgba(255, 255, 255, 0.2);
-      transform: scale(1.05);
-    }
-
-    .control-btn.primary {
-      background: var(--primary);
-    }
-
-    .control-btn.primary:hover {
-      background: var(--primary-dark);
+      padding: 10px 0;
     }
 
     /* Next Episode Button */
@@ -274,6 +226,8 @@
       padding: 20px;
       height: fit-content;
       box-shadow: var(--shadow);
+      max-height: 80vh;
+      overflow-y: auto;
     }
 
     .sidebar-header {
@@ -427,6 +381,8 @@
       color: var(--text-secondary);
       position: relative;
       overflow: hidden;
+      background-size: cover;
+      background-position: center;
     }
 
     .card-thumb:after {
@@ -486,6 +442,30 @@
       color: var(--text-secondary);
     }
 
+    /* Loading animation */
+    .loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      border-top: 5px solid var(--primary);
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
     /* Animations */
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(20px); }
@@ -510,6 +490,7 @@
       
       .sidebar {
         width: 100%;
+        max-height: 400px;
       }
     }
 
@@ -549,6 +530,11 @@
   </style>
 </head>
 <body>
+  <div id="loading" class="loading">
+    <div class="spinner"></div>
+    <p>Loading Drive Streamer</p>
+  </div>
+
   <header>
     <a href="#" class="logo">
       <i class="fas fa-play-circle"></i>
@@ -575,19 +561,13 @@
     </div>
   </header>
 
-  <div class="content-wrapper">
+  <div class="content-wrapper" style="display: none;" id="mainContent">
     <div class="main-content">
       <div class="player-container">
         <iframe id="playerFrame" allow="autoplay" allowfullscreen></iframe>
-        <div class="player-overlay">
-          <p id="status">Select content to play</p>
-          <div class="player-controls">
-            <button class="control-btn primary"><i class="fas fa-play"></i></button>
-            <button class="control-btn"><i class="fas fa-volume-up"></i></button>
-            <button class="control-btn"><i class="fas fa-expand"></i></button>
-          </div>
-        </div>
       </div>
+      
+      <p id="status">Select content to play</p>
       
       <div id="nextControls"></div>
       
@@ -633,6 +613,8 @@
     const backButton = document.getElementById("backButton");
     const sidebarTitle = document.getElementById("sidebarTitle");
     const episodesList = document.getElementById("episodesList");
+    const loadingElement = document.getElementById("loading");
+    const mainContent = document.getElementById("mainContent");
 
     // Header scroll effect
     window.addEventListener('scroll', () => {
@@ -663,14 +645,19 @@
         status.textContent = "Loading your library...";
         const res = await gapi.client.drive.files.list({
           q: `'${FOLDER_ID}' in parents and trashed=false`,
-          fields: "files(id,name,mimeType)",
+          fields: "files(id, name, mimeType, thumbnailLink)",
           orderBy: "name",
         });
         const files = res.result.files || [];
         renderLibrary(files);
+        
+        // Hide loading, show content
+        loadingElement.style.display = 'none';
+        mainContent.style.display = 'flex';
       } catch (e) {
         console.error("Drive API error", e);
         status.textContent = "Error loading Drive files.";
+        loadingElement.innerHTML = "<p>Error loading content. Please check your API key and folder ID.</p>";
       }
     }
 
@@ -687,10 +674,11 @@
         card.style.animationDelay = `${index * 0.1}s`;
         
         const isFolder = file.mimeType === "application/vnd.google-apps.folder";
+        const thumbnailUrl = file.thumbnailLink || '';
         
         card.innerHTML = `
-          <div class="card-thumb">
-            <i class="${isFolder ? 'fas fa-folder' : 'fas fa-play'} fa-2x"></i>
+          <div class="card-thumb" style="background-image: ${thumbnailUrl ? `url(${thumbnailUrl})` : 'none'};">
+            ${!thumbnailUrl ? `<i class="${isFolder ? 'fas fa-folder' : 'fas fa-play'} fa-2x"></i>` : ''}
             <div class="play-overlay">
               <i class="fas fa-play"></i>
             </div>
@@ -718,7 +706,7 @@
         status.textContent = `Loading ${seriesName}...`;
         const res = await gapi.client.drive.files.list({
           q: `'${folderId}' in parents and trashed=false and mimeType contains 'video/'`,
-          fields: "files(id,name,mimeType)",
+          fields: "files(id, name, mimeType, thumbnailLink)",
           orderBy: "name"
         });
         const episodes = res.result.files || [];
