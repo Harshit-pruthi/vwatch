@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Drive Streamer - Home</title>
+  <title>Drive Streamer</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
@@ -150,43 +150,58 @@
       transform: scale(1.05);
     }
 
-    /* Hero Section */
-    .hero {
-      height: 70vh;
-      background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1489599102910-59206b8ca314?ixlib=rb-4.0.3') center/cover;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 0 20px;
+    /* Main Content */
+    .content-wrapper {
       margin-top: 80px;
+      padding: 20px 40px;
+      display: flex;
+      gap: 30px;
     }
 
-    .hero-content {
-      max-width: 800px;
+    .main-content {
+      flex: 3;
+      border-radius: var(--radius);
+      overflow: hidden;
     }
 
-    .hero-title {
-      font-size: 48px;
-      font-weight: 700;
+    .player-container {
+      position: relative;
+      width: 100%;
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      margin-bottom: 24px;
+    }
+
+    #playerFrame {
+      width: 100%;
+      height: 500px;
+      border: none;
+      background: #000;
+      display: block;
+    }
+
+    #status {
+      font-size: 22px;
+      font-weight: 600;
       margin-bottom: 20px;
       background: var(--gradient);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
+      padding: 10px 0;
     }
 
-    .hero-subtitle {
-      font-size: 18px;
-      color: var(--text-secondary);
-      margin-bottom: 30px;
+    /* Next Episode Button */
+    #nextControls {
+      margin-top: 20px;
     }
 
-    .hero-btn {
-      display: inline-flex;
+    .next-btn {
+      display: flex;
       align-items: center;
       gap: 10px;
-      padding: 14px 28px;
+      padding: 14px 24px;
       background: var(--gradient);
       color: white;
       border: none;
@@ -198,29 +213,116 @@
       box-shadow: 0 4px 15px rgba(255, 44, 84, 0.3);
     }
 
-    .hero-btn:hover {
+    .next-btn:hover {
       transform: translateY(-2px);
       box-shadow: 0 6px 20px rgba(255, 44, 84, 0.4);
     }
 
-    /* Main Content */
-    .content-wrapper {
-      padding: 40px;
+    /* Sidebar */
+    .sidebar {
+      flex: 1;
+      background: var(--dark-card);
+      border-radius: var(--radius);
+      padding: 20px;
+      height: fit-content;
+      box-shadow: var(--shadow);
+      max-height: 80vh;
+      overflow-y: auto;
     }
 
+    .sidebar-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .sidebar-title {
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .back-btn {
+      background: rgba(255, 255, 255, 0.1);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .back-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .episodes-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .episode-card {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      padding: 15px;
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .episode-card:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      transition: var(--transition);
+    }
+
+    .episode-card:hover:before {
+      left: 100%;
+    }
+
+    .episode-card:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateX(5px);
+    }
+
+    .episode-card.active {
+      background: rgba(255, 44, 84, 0.15);
+      border-left: 4px solid var(--primary);
+    }
+
+    .episode-name {
+      font-weight: 500;
+      margin-bottom: 5px;
+    }
+
+    .episode-meta {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    /* Library Grid */
     .library-section {
-      margin-bottom: 60px;
+      margin-top: 40px;
     }
 
     .section-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 30px;
+      margin-bottom: 20px;
     }
 
     .section-title {
-      font-size: 28px;
+      font-size: 24px;
       font-weight: 600;
       position: relative;
       padding-left: 15px;
@@ -233,7 +335,7 @@
       top: 50%;
       transform: translateY(-50%);
       width: 5px;
-      height: 30px;
+      height: 24px;
       background: var(--gradient);
       border-radius: 10px;
     }
@@ -251,8 +353,8 @@
 
     .content-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 25px;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
     }
 
     .content-card {
@@ -271,7 +373,7 @@
 
     .card-thumb {
       width: 100%;
-      height: 300px;
+      height: 250px;
       background: #222;
       display: flex;
       align-items: center;
@@ -279,6 +381,8 @@
       color: var(--text-secondary);
       position: relative;
       overflow: hidden;
+      background-size: cover;
+      background-position: center;
     }
 
     .card-thumb:after {
@@ -322,43 +426,124 @@
     }
 
     .card-content {
-      padding: 20px;
+      padding: 15px;
     }
 
     .card-title {
       font-weight: 600;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      font-size: 18px;
     }
 
     .card-info {
-      font-size: 14px;
+      font-size: 13px;
       color: var(--text-secondary);
     }
 
-    /* Categories Section */
-    .categories {
-      display: flex;
-      gap: 15px;
-      margin-bottom: 40px;
-      flex-wrap: wrap;
+    /* Info Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 2000;
+      justify-content: center;
+      align-items: center;
+      backdrop-filter: blur(5px);
     }
 
-    .category-btn {
-      padding: 10px 20px;
-      background: rgba(255, 255, 255, 0.1);
+    .modal-content {
+      background: var(--dark-card);
+      border-radius: var(--radius);
+      width: 90%;
+      max-width: 600px;
+      max-height: 80vh;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      animation: modalFadeIn 0.3s ease;
+    }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .modal-header {
+      padding: 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-title {
+      font-size: 22px;
+      font-weight: 600;
+    }
+
+    .close-modal {
+      background: none;
       border: none;
-      border-radius: 20px;
-      color: var(--text-primary);
+      color: var(--text-secondary);
+      font-size: 24px;
       cursor: pointer;
       transition: var(--transition);
     }
 
-    .category-btn.active, .category-btn:hover {
+    .close-modal:hover {
+      color: var(--primary);
+    }
+
+    .modal-body {
+      padding: 20px;
+      max-height: 50vh;
+      overflow-y: auto;
+    }
+
+    .modal-info {
+      line-height: 1.6;
+      color: var(--text-secondary);
+    }
+
+    .modal-actions {
+      padding: 20px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 15px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .modal-btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: var(--transition);
+    }
+
+    .modal-btn.play {
       background: var(--gradient);
+      color: white;
+    }
+
+    .modal-btn.play:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(255, 44, 84, 0.3);
+    }
+
+    .modal-btn.cancel {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-primary);
+    }
+
+    .modal-btn.cancel:hover {
+      background: rgba(255, 255, 255, 0.2);
     }
 
     /* Loading animation */
@@ -366,7 +551,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 50vh;
+      height: 100vh;
       flex-direction: column;
       gap: 20px;
     }
@@ -385,36 +570,6 @@
       100% { transform: rotate(360deg); }
     }
 
-    /* Footer */
-    footer {
-      background: var(--dark-card);
-      padding: 40px;
-      text-align: center;
-      margin-top: 60px;
-    }
-
-    .footer-links {
-      display: flex;
-      justify-content: center;
-      gap: 30px;
-      margin-bottom: 20px;
-    }
-
-    .footer-links a {
-      color: var(--text-secondary);
-      text-decoration: none;
-      transition: var(--transition);
-    }
-
-    .footer-links a:hover {
-      color: var(--primary);
-    }
-
-    .copyright {
-      color: var(--text-secondary);
-      font-size: 14px;
-    }
-
     /* Animations */
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(20px); }
@@ -428,13 +583,18 @@
     /* Responsive Design */
     @media (max-width: 1200px) {
       .content-grid {
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
       }
     }
 
     @media (max-width: 992px) {
-      .hero-title {
-        font-size: 36px;
+      .content-wrapper {
+        flex-direction: column;
+      }
+      
+      .sidebar {
+        width: 100%;
+        max-height: 400px;
       }
     }
 
@@ -459,29 +619,20 @@
         padding: 20px;
       }
       
-      .hero {
-        height: 60vh;
-      }
-      
-      .hero-title {
-        font-size: 32px;
+      #playerFrame {
+        height: 300px;
       }
       
       .content-grid {
-        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
       }
       
       .card-thumb {
-        height: 220px;
+        height: 200px;
       }
-      
-      .categories {
-        gap: 10px;
-      }
-      
-      .category-btn {
-        padding: 8px 16px;
-        font-size: 14px;
+
+      .modal-content {
+        width: 95%;
       }
     }
   </style>
@@ -494,7 +645,7 @@
     </a>
     
     <nav class="nav-links">
-      <a href="#" class="active">Home</a>
+      <a href="#">Home</a>
       <a href="#">Movies</a>
       <a href="#">TV Shows</a>
       <a href="#">New</a>
@@ -513,66 +664,82 @@
     </div>
   </header>
 
-  <div class="hero">
-    <div class="hero-content">
-      <h1 class="hero-title">Your Personal Streaming Service</h1>
-      <p class="hero-subtitle">Access all your Google Drive videos in one place with a beautiful interface</p>
-      <button class="hero-btn" onclick="scrollToContent()">
-        <i class="fas fa-play"></i>
-        Start Watching
-      </button>
-    </div>
-  </div>
-
   <div class="content-wrapper">
-    <div class="categories">
-      <button class="category-btn active" data-category="all">All Content</button>
-      <button class="category-btn" data-category="series">Series</button>
-      <button class="category-btn" data-category="movies">Movies</button>
-      <button class="category-btn" data-category="recent">Recently Added</button>
-    </div>
-    
-    <div class="library-section">
-      <div class="section-header">
-        <h2 class="section-title">Your Library</h2>
-        <a href="#" class="view-all">View All</a>
+    <div class="main-content">
+      <div class="player-container">
+        <iframe id="playerFrame" allow="autoplay" allowfullscreen></iframe>
       </div>
       
-      <div id="list" class="content-grid">
-        <div class="loading">
-          <div class="spinner"></div>
-          <p>Loading your content...</p>
+      <p id="status">Select content to play</p>
+      
+      <div id="nextControls"></div>
+      
+      <div class="library-section">
+        <div class="section-header">
+          <h2 class="section-title">Your Library</h2>
+          <a href="#" class="view-all">View All</a>
+        </div>
+        
+        <div id="list" class="content-grid"></div>
+      </div>
+    </div>
+    
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <h2 class="sidebar-title" id="sidebarTitle">Library</h2>
+        <div class="back-btn" id="backButton" style="display: none;">
+          <i class="fas fa-arrow-left"></i>
         </div>
       </div>
-    </div>
-    
-    <div class="library-section">
-      <div class="section-header">
-        <h2 class="section-title">Recently Added</h2>
-        <a href="#" class="view-all">View All</a>
-      </div>
       
-      <div id="recent-list" class="content-grid">
-        <!-- Recently added content will be loaded here -->
+      <div id="sidebarContent">
+        <div class="episodes-list" id="episodesList"></div>
       </div>
     </div>
   </div>
 
-  <footer>
-    <div class="footer-links">
-      <a href="#">Home</a>
-      <a href="#">About</a>
-      <a href="#">Privacy Policy</a>
-      <a href="#">Terms of Service</a>
-      <a href="#">Contact</a>
+  <!-- Info Modal -->
+  <div class="modal" id="infoModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modalTitle">Video Information</h2>
+        <button class="close-modal" id="closeModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-info" id="modalInfo">Loading information...</div>
+      </div>
+      <div class="modal-actions">
+        <button class="modal-btn cancel" id="cancelModal">Close</button>
+        <button class="modal-btn play" id="playModal">Play Now</button>
+      </div>
     </div>
-    <p class="copyright">© 2023 DriveStream. All rights reserved.</p>
-  </footer>
+  </div>
 
   <script>
     // ==== CONFIG ====
     const API_KEY   = "AIzaSyARMW-kuCFgiGQuvPx43XF4OoViAgP8IIg";
     const FOLDER_ID = "1Yr8DpaxP66ZCi_NEoKclbh5BdieBhn0S"; // Main library folder
+
+    // ==== STATE ====
+    let currentSeries = null;
+    let currentEpisodes = [];
+    let currentIndex = -1;
+    let currentVideoInfo = null;
+
+    const status = document.getElementById("status");
+    const list = document.getElementById("list");
+    const playerFrame = document.getElementById("playerFrame");
+    const sidebarContent = document.getElementById("sidebarContent");
+    const nextControls = document.getElementById("nextControls");
+    const backButton = document.getElementById("backButton");
+    const sidebarTitle = document.getElementById("sidebarTitle");
+    const episodesList = document.getElementById("episodesList");
+    const infoModal = document.getElementById("infoModal");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalInfo = document.getElementById("modalInfo");
+    const closeModal = document.getElementById("closeModal");
+    const cancelModal = document.getElementById("cancelModal");
+    const playModal = document.getElementById("playModal");
 
     // Header scroll effect
     window.addEventListener('scroll', () => {
@@ -584,26 +751,31 @@
       }
     });
 
-    // Scroll to content function
-    function scrollToContent() {
-      document.querySelector('.content-wrapper').scrollIntoView({ 
-        behavior: 'smooth' 
-      });
-    }
+    // Modal functionality
+    closeModal.addEventListener('click', () => {
+      infoModal.style.display = 'none';
+    });
 
-    // Category filtering
-    document.querySelectorAll('.category-btn').forEach(button => {
-      button.addEventListener('click', () => {
-        document.querySelectorAll('.category-btn').forEach(btn => {
-          btn.classList.remove('active');
-        });
-        button.classList.add('active');
-        
-        // In a real app, you would filter content based on category
-        const category = button.getAttribute('data-category');
-        console.log(`Filtering by category: ${category}`);
-        // filterContent(category);
-      });
+    cancelModal.addEventListener('click', () => {
+      infoModal.style.display = 'none';
+    });
+
+    playModal.addEventListener('click', () => {
+      infoModal.style.display = 'none';
+      if (currentVideoInfo) {
+        if (currentVideoInfo.type === 'standalone') {
+          playStandalone(currentVideoInfo.id, currentVideoInfo.name);
+        } else if (currentVideoInfo.type === 'episode') {
+          playEpisode(currentVideoInfo.index);
+        }
+      }
+    });
+
+    // Close modal when clicking outside
+    window.addEventListener('click', (event) => {
+      if (event.target === infoModal) {
+        infoModal.style.display = 'none';
+      }
     });
 
     // Load GAPI
@@ -622,100 +794,34 @@
     // Load library (Movies + Series folders)
     async function loadLibrary() {
       try {
+        status.textContent = "Loading your library...";
         const res = await gapi.client.drive.files.list({
           q: `'${FOLDER_ID}' in parents and trashed=false`,
-          fields: "files(id, name, mimeType, thumbnailLink, createdTime)",
+          fields: "files(id, name, mimeType, thumbnailLink)",
           orderBy: "name",
         });
         const files = res.result.files || [];
         renderLibrary(files);
-        
-        // Also load recently added files
-        loadRecentlyAdded(files);
       } catch (e) {
         console.error("Drive API error", e);
-        document.getElementById('list').innerHTML = `
-          <div style="grid-column: 1 / -1; text-align: center; padding: 40px;">
-            <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: #ff2c54; margin-bottom: 20px;"></i>
-            <p>Error loading content. Please check your API key and folder ID.</p>
-          </div>
-        `;
+        status.textContent = "Error loading Drive files.";
       }
-    }
-
-    // Load recently added files
-    function loadRecentlyAdded(files) {
-      const recentList = document.getElementById('recent-list');
-      const recentFiles = [...files]
-        .sort((a, b) => new Date(b.createdTime) - new Date(a.createdTime))
-        .slice(0, 6); // Get 6 most recent files
-      
-      if (recentFiles.length === 0) {
-        recentList.innerHTML = `
-          <div style="grid-column: 1 / -1; text-align: center; padding: 40px;">
-            <p>No recently added content.</p>
-          </div>
-        `;
-        return;
-      }
-      
-      recentList.innerHTML = '';
-      recentFiles.forEach((file, index) => {
-        const isFolder = file.mimeType === "application/vnd.google-apps.folder";
-        const thumbnailUrl = file.thumbnailLink || '';
-        
-        const card = document.createElement("div");
-        card.className = "content-card fade-in";
-        card.style.animationDelay = `${index * 0.1}s`;
-        
-        card.innerHTML = `
-          <div class="card-thumb" style="background-image: ${thumbnailUrl ? `url(${thumbnailUrl})` : 'none'};">
-            ${!thumbnailUrl ? `<i class="${isFolder ? 'fas fa-folder' : 'fas fa-play'} fa-2x"></i>` : ''}
-            <div class="play-overlay">
-              <i class="fas fa-play"></i>
-            </div>
-          </div>
-          <div class="card-content">
-            <h3 class="card-title">${file.name}</h3>
-            <p class="card-info">${isFolder ? 'Series' : 'Movie'} • ${formatDate(file.createdTime)}</p>
-          </div>
-        `;
-        
-        card.onclick = () => {
-          if (isFolder) {
-            // Navigate to series page
-            window.location.href = `streaming.html?series=${file.id}`;
-          } else {
-            // Play the video directly
-            window.location.href = `streaming.html?video=${file.id}`;
-          }
-        };
-        
-        recentList.appendChild(card);
-      });
     }
 
     function renderLibrary(files) {
-      const list = document.getElementById("list");
       list.innerHTML = "";
-      
       if (!files.length) {
-        list.innerHTML = `
-          <div style="grid-column: 1 / -1; text-align: center; padding: 40px;">
-            <i class="fas fa-folder-open" style="font-size: 48px; color: #ff2c54; margin-bottom: 20px;"></i>
-            <p>No files found in your Drive folder.</p>
-          </div>
-        `;
+        list.innerHTML = "<p style='grid-column: 1 / -1; text-align: center; padding: 40px;'>No files found in folder.</p>";
         return;
       }
       
       files.forEach((file, index) => {
-        const isFolder = file.mimeType === "application/vnd.google-apps.folder";
-        const thumbnailUrl = file.thumbnailLink || '';
-        
         const card = document.createElement("div");
         card.className = "content-card fade-in";
         card.style.animationDelay = `${index * 0.1}s`;
+        
+        const isFolder = file.mimeType === "application/vnd.google-apps.folder";
+        const thumbnailUrl = file.thumbnailLink || '';
         
         card.innerHTML = `
           <div class="card-thumb" style="background-image: ${thumbnailUrl ? `url(${thumbnailUrl})` : 'none'};">
@@ -730,25 +836,214 @@
           </div>
         `;
         
-        card.onclick = () => {
-          if (isFolder) {
-            // Navigate to series page
-            window.location.href = `streaming.html?series=${file.id}`;
-          } else {
-            // Play the video directly
-            window.location.href = `streaming.html?video=${file.id}`;
-          }
-        };
+        if (isFolder) {
+          card.onclick = () => loadSeries(file.id, file.name);
+        } else {
+          card.onclick = () => showVideoInfo(file.id, file.name, 'standalone');
+        }
         
         list.appendChild(card);
       });
+      status.textContent = "Select something to watch";
     }
 
-    // Format date function
-    function formatDate(dateString) {
-      const options = { year: 'numeric', month: 'short', day: 'numeric' };
-      return new Date(dateString).toLocaleDateString(undefined, options);
+    // Load a series folder (episodes)
+    async function loadSeries(folderId, seriesName) {
+      try {
+        status.textContent = `Loading ${seriesName}...`;
+        const res = await gapi.client.drive.files.list({
+          q: `'${folderId}' in parents and trashed=false and mimeType contains 'video/'`,
+          fields: "files(id, name, mimeType, thumbnailLink)",
+          orderBy: "name"
+        });
+        const episodes = res.result.files || [];
+        if (!episodes.length) { 
+          status.textContent = "No episodes in this series";
+          return; 
+        }
+
+        currentSeries = seriesName;
+        currentEpisodes = episodes.sort((a,b)=>a.name.localeCompare(b.name));
+        currentIndex = 0;
+        
+        // Update UI
+        sidebarTitle.textContent = seriesName;
+        backButton.style.display = "flex";
+        renderEpisodesSidebar();
+      } catch (e) {
+        console.error(e);
+        status.textContent = "Failed to load series";
+      }
     }
+
+    // Render episodes in sidebar
+    function renderEpisodesSidebar() {
+      episodesList.innerHTML = "";
+      currentEpisodes.forEach((ep, i) => {
+        const episodeCard = document.createElement("div");
+        episodeCard.className = `episode-card ${i === currentIndex ? 'active' : ''}`;
+        episodeCard.innerHTML = `
+          <div class="episode-name">${ep.name}</div>
+          <div class="episode-meta">Episode ${i + 1}</div>
+        `;
+        episodeCard.onclick = () => showVideoInfo(ep.id, ep.name, 'episode', i);
+        episodesList.appendChild(episodeCard);
+      });
+    }
+
+    // Show video information modal
+    async function showVideoInfo(fileId, fileName, type, index = null) {
+      // Show loading state
+      infoModal.style.display = 'flex';
+      modalTitle.textContent = fileName;
+      modalInfo.textContent = 'Loading information...';
+      
+      // Store video info for later playback
+      currentVideoInfo = {
+        id: fileId,
+        name: fileName,
+        type: type,
+        index: index
+      };
+      
+      try {
+        // Try to find a text file with the same name
+        const baseName = fileName.replace(/\.[^/.]+$/, ""); // Remove extension
+        const txtFileName = `${baseName}.txt`;
+        
+        // Search for the text file in the same folder
+        let folderId = FOLDER_ID;
+        if (type === 'episode' && currentSeries) {
+          // For episodes, we need to find the series folder ID
+          const seriesRes = await gapi.client.drive.files.list({
+            q: `name = '${currentSeries}' and mimeType = 'application/vnd.google-apps.folder' and trashed=false`,
+            fields: "files(id)",
+          });
+          if (seriesRes.result.files.length > 0) {
+            folderId = seriesRes.result.files[0].id;
+          }
+        }
+        
+        // Search for the text file
+        const res = await gapi.client.drive.files.list({
+          q: `name = '${txtFileName}' and '${folderId}' in parents and trashed=false`,
+          fields: "files(id, name)",
+        });
+        
+        if (res.result.files.length > 0) {
+          // Found the text file, get its content
+          const txtFileId = res.result.files[0].id;
+          const contentResponse = await gapi.client.drive.files.get({
+            fileId: txtFileId,
+            alt: 'media'
+          });
+          
+          // Display the content
+          modalInfo.innerHTML = formatTextContent(contentResponse.body);
+        } else {
+          // No text file found
+          modalInfo.innerHTML = `
+            <p>No information available for this video.</p>
+            <p class="modal-meta">Create a text file named "${txtFileName}" in the same folder to add information.</p>
+          `;
+        }
+      } catch (error) {
+        console.error('Error loading video info:', error);
+        modalInfo.innerHTML = `
+          <p>Could not load information for this video.</p>
+          <p class="modal-meta">Error: ${error.message || 'Unknown error'}</p>
+        `;
+      }
+    }
+
+    // Format text content with basic markup
+    function formatTextContent(text) {
+      // Convert line breaks to paragraphs
+      const paragraphs = text.split('\n\n');
+      let html = '';
+      
+      paragraphs.forEach(para => {
+        if (para.trim()) {
+          // Check if it's a heading (lines ending with :)
+          if (para.includes(':') && para.split('\n').length === 1) {
+            html += `<h3>${para}</h3>`;
+          } else {
+            html += `<p>${para.replace(/\n/g, '<br>')}</p>`;
+          }
+        }
+      });
+      
+      return html || `<p>${text.replace(/\n/g, '<br>')}</p>`;
+    }
+
+    // Play one episode
+    function playEpisode(index) {
+      const ep = currentEpisodes[index];
+      if (!ep) return;
+      const url = `https://drive.google.com/file/d/${ep.id}/preview`;
+      playerFrame.src = url;
+      status.textContent = `Now playing: ${ep.name}`;
+      renderNextButton();
+    }
+
+    // Standalone movie
+    function playStandalone(fileId, name) {
+      currentSeries = null;
+      currentEpisodes = [];
+      currentIndex = -1;
+      
+      // Reset sidebar
+      sidebarTitle.textContent = "Library";
+      backButton.style.display = "none";
+      episodesList.innerHTML = "<div class='episode-card'>Select a series to view episodes</div>";
+      
+      const url = `https://drive.google.com/file/d/${fileId}/preview`;
+      playerFrame.src = url;
+      status.textContent = `Now playing: ${name}`;
+      nextControls.innerHTML = "";
+    }
+
+    // Next episode controls
+    function renderNextButton() {
+      nextControls.innerHTML = "";
+      if (currentSeries && currentIndex < currentEpisodes.length-1) {
+        const btn = document.createElement("button");
+        btn.className = "next-btn";
+        btn.innerHTML = `<i class="fas fa-forward"></i> Next Episode`;
+        btn.onclick = () => { 
+          currentIndex++; 
+          playEpisode(currentIndex);
+          
+          // Update active state
+          document.querySelectorAll('.episode-card').forEach((card, i) => {
+            if (i === currentIndex) {
+              card.classList.add('active');
+            } else {
+              card.classList.remove('active');
+            }
+          });
+        };
+        nextControls.appendChild(btn);
+      }
+    }
+
+    // Back button functionality
+    backButton.addEventListener('click', () => {
+      currentSeries = null;
+      currentEpisodes = [];
+      currentIndex = -1;
+      
+      // Reset UI
+      playerFrame.src = '';
+      status.textContent = 'Select something to watch';
+      nextControls.innerHTML = '';
+      sidebarTitle.textContent = 'Library';
+      backButton.style.display = 'none';
+      episodesList.innerHTML = '<div class="episode-card">Select a series to view episodes</div>';
+      
+      // Reload library
+      loadLibrary();
+    });
 
     window.gapiLoaded = gapiLoaded;
   </script>
