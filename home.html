@@ -339,46 +339,6 @@
       color: var(--text-secondary);
     }
 
-    /* Progress bar for continue watching */
-    .progress-bar {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 4px;
-      background: rgba(255, 255, 255, 0.2);
-      z-index: 1;
-    }
-
-    .progress-fill {
-      height: 100%;
-      background: var(--gradient);
-      width: 0%;
-      transition: width 0.3s ease;
-    }
-
-    /* Continue watching button */
-    .continue-btn {
-      position: absolute;
-      bottom: 10px;
-      right: 10px;
-      padding: 6px 12px;
-      background: var(--gradient);
-      color: white;
-      border: none;
-      border-radius: 4px;
-      font-size: 12px;
-      font-weight: 500;
-      cursor: pointer;
-      z-index: 2;
-      opacity: 0;
-      transition: var(--transition);
-    }
-
-    .content-card:hover .continue-btn {
-      opacity: 1;
-    }
-
     /* Categories Section */
     .categories {
       display: flex;
@@ -565,18 +525,6 @@
   </div>
 
   <div class="content-wrapper">
-    <!-- Continue Watching Section -->
-    <div class="library-section" id="continueWatchingSection" style="display: none;">
-      <div class="section-header">
-        <h2 class="section-title">Continue Watching</h2>
-        <a href="#" class="view-all" onclick="clearWatchHistory()">Clear History</a>
-      </div>
-      
-      <div id="continue-watching-list" class="content-grid">
-        <!-- Continue watching content will be loaded here -->
-      </div>
-    </div>
-    
     <div class="categories">
       <button class="category-btn active" data-category="all">All Content</button>
       <button class="category-btn" data-category="series">Series</button>
@@ -684,9 +632,6 @@
         
         // Also load recently added files
         loadRecentlyAdded(files);
-        
-        // Load continue watching items
-        loadContinueWatching(files);
       } catch (e) {
         console.error("Drive API error", e);
         document.getElementById('list').innerHTML = `
@@ -695,103 +640,6 @@
             <p>Error loading content. Please check your API key and folder ID.</p>
           </div>
         `;
-      }
-    }
-
-    // Load continue watching items
-    function loadContinueWatching(files) {
-      const continueWatchingSection = document.getElementById('continueWatchingSection');
-      const continueWatchingList = document.getElementById('continue-watching-list');
-      
-      // Get watch history from localStorage
-      const watchHistory = JSON.parse(localStorage.getItem('watchHistory') || '{}');
-      
-      // Filter out items with progress
-      const continueWatchingItems = [];
-      
-      for (const videoId in watchHistory) {
-        if (watchHistory[videoId].progress > 0 && watchHistory[videoId].progress < 100) {
-          // Find the file in our library
-          const file = files.find(f => f.id === videoId);
-          if (file) {
-            continueWatchingItems.push({
-              file: file,
-              progress: watchHistory[videoId].progress,
-              lastWatched: watchHistory[videoId].lastWatched,
-              seriesId: watchHistory[videoId].seriesId
-            });
-          }
-        }
-      }
-      
-      // Sort by last watched date (newest first)
-      continueWatchingItems.sort((a, b) => b.lastWatched - a.lastWatched);
-      
-      if (continueWatchingItems.length === 0) {
-        continueWatchingSection.style.display = 'none';
-        return;
-      }
-      
-      continueWatchingSection.style.display = 'block';
-      continueWatchingList.innerHTML = '';
-      
-      // Display up to 6 continue watching items
-      continueWatchingItems.slice(0, 6).forEach((item, index) => {
-        const file = item.file;
-        const isFolder = file.mimeType === "application/vnd.google-apps.folder";
-        const thumbnailUrl = file.thumbnailLink || '';
-        
-        const card = document.createElement("div");
-        card.className = "content-card fade-in";
-        card.style.animationDelay = `${index * 0.1}s`;
-        
-        card.innerHTML = `
-          <div class="card-thumb" style="background-image: ${thumbnailUrl ? `url(${thumbnailUrl})` : 'none'};">
-            ${!thumbnailUrl ? `<i class="${isFolder ? 'fas fa-folder' : 'fas fa-play'} fa-2x"></i>` : ''}
-            <div class="progress-bar">
-              <div class="progress-fill" style="width: ${item.progress}%"></div>
-            </div>
-            <div class="play-overlay">
-              <i class="fas fa-play"></i>
-            </div>
-            <button class="continue-btn" onclick="event.stopPropagation(); continueWatching('${file.id}', ${!!item.seriesId})">
-              <i class="fas fa-play"></i> Continue
-            </button>
-          </div>
-          <div class="card-content">
-            <h3 class="card-title">${file.name}</h3>
-            <p class="card-info">${isFolder ? 'Series' : 'Movie'} • ${Math.round(item.progress)}% watched</p>
-          </div>
-        `;
-        
-        card.onclick = () => {
-          if (isFolder) {
-            // Navigate to series page
-            window.location.href = `streaming.html?series=${file.id}`;
-          } else {
-            // Play the video directly
-            window.location.href = `streaming.html?video=${file.id}`;
-          }
-        };
-        
-        continueWatchingList.appendChild(card);
-      });
-    }
-
-    // Continue watching function
-    function continueWatching(videoId, isSeries) {
-      if (isSeries) {
-        window.location.href = `streaming.html?series=${videoId}`;
-      } else {
-        window.location.href = `streaming.html?video=${videoId}`;
-      }
-    }
-
-    // Clear watch history
-    function clearWatchHistory() {
-      if (confirm("Are you sure you want to clear your watch history?")) {
-        localStorage.removeItem('watchHistory');
-        document.getElementById('continueWatchingSection').style.display = 'none';
       }
     }
 
