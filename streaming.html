@@ -192,32 +192,6 @@
       padding: 10px 0;
     }
 
-    /* Progress tracking UI */
-    .progress-info {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 15px;
-      font-size: 14px;
-      color: var(--text-secondary);
-    }
-
-    .progress-bar-container {
-      width: 100%;
-      height: 4px;
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 2px;
-      margin-bottom: 20px;
-      overflow: hidden;
-    }
-
-    .progress-bar-fill {
-      height: 100%;
-      background: var(--gradient);
-      border-radius: 2px;
-      transition: width 0.3s ease;
-    }
-
     /* Next Episode Button */
     #nextControls {
       margin-top: 20px;
@@ -323,20 +297,6 @@
     .episode-card.active {
       background: rgba(255, 44, 84, 0.15);
       border-left: 4px solid var(--primary);
-    }
-
-    .episode-progress {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 3px;
-      background: rgba(255, 255, 255, 0.2);
-    }
-
-    .episode-progress-fill {
-      height: 100%;
-      background: var(--gradient);
     }
 
     .episode-name {
@@ -482,6 +442,23 @@
       color: var(--text-secondary);
     }
 
+    /* Progress bar for continue watching */
+    .progress-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--gradient);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
     /* Loading animation */
     .loading {
       display: flex;
@@ -576,7 +553,7 @@
   </div>
 
   <header>
-    <a href="#" class="logo">
+    <a href="home.html" class="logo">
       <i class="fas fa-play-circle"></i>
       <span>DriveStream</span>
     </a>
@@ -609,14 +586,6 @@
       
       <p id="status">Select content to play</p>
       
-      <div id="progressInfo" class="progress-info" style="display: none;">
-        <i class="fas fa-history"></i>
-        <span>Resumed from <span id="resumeTime">0:00</span></span>
-      </div>
-      <div id="progressBar" class="progress-bar-container" style="display: none;">
-        <div id="progressBarFill" class="progress-bar-fill" style="width: 0%"></div>
-      </div>
-      
       <div id="nextControls"></div>
       
       <div class="library-section">
@@ -643,45 +612,16 @@
     </div>
   </div>
 
-  <!-- Firebase App (core Firebase SDK) -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <!-- Firebase Firestore -->
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-
   <script>
     // ==== CONFIG ====
     const API_KEY   = "AIzaSyARMW-kuCFgiGQuvPx43XF4OoViAgP8IIg";
     const FOLDER_ID = "1Yr8DpaxP66ZCi_NEoKclbh5BdieBhn0S"; // Main library folder
 
-    // Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyCWHM-Uh4SOuhmYEz35c3nKpsapJYwl1pE",
-  authDomain: "streamingsite-85113.firebaseapp.com",
-  projectId: "streamingsite-85113",
-  storageBucket: "streamingsite-85113.firebasestorage.app",
-  messagingSenderId: "525979195033",
-  appId: "1:525979195033:web:9aee4402a10ce9ee0c0a08",
-  measurementId: "G-9H1J1MGY2M"
-};
-
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-
-    // Generate a unique user ID (in a real app, use authentication)
-    let userId = localStorage.getItem('userId');
-    if (!userId) {
-      userId = 'user_' + Math.random().toString(36).substr(2, 9);
-      localStorage.setItem('userId', userId);
-    }
-
     // ==== STATE ====
     let currentSeries = null;
     let currentEpisodes = [];
     let currentIndex = -1;
-    let currentProgress = 0;
-    let progressInterval = null;
-    let isResuming = false;
+    let watchProgressInterval = null;
 
     const status = document.getElementById("status");
     const list = document.getElementById("list");
@@ -693,10 +633,6 @@ const firebaseConfig = {
     const episodesList = document.getElementById("episodesList");
     const loadingElement = document.getElementById("loading");
     const mainContent = document.getElementById("mainContent");
-    const progressInfo = document.getElementById("progressInfo");
-    const progressBar = document.getElementById("progressBar");
-    const progressBarFill = document.getElementById("progressBarFill");
-    const resumeTime = document.getElementById("resumeTime");
 
     // Header scroll effect
     window.addEventListener('scroll', () => {
@@ -718,141 +654,7 @@ const firebaseConfig = {
         apiKey: API_KEY, 
         discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"] 
       });
-      
-      // Check if we need to resume playback
-      const urlParams = new URLSearchParams(window.location.search);
-      const resume = urlParams.get('resume');
-      
-      if (resume === 'true') {
-        await loadResumeProgress();
-      } else {
-        loadLibrary();
-      }
-    }
-
-    // Load resume progress from Firebase
-    async function loadResumeProgress() {
-      try {
-        const urlParams = new URLSearchParams(window.location.search);
-        const videoId = urlParams.get('video');
-        const seriesId = urlParams.get('series');
-        const episodeId = urlParams.get('episode');
-        
-        if (!videoId && !seriesId) {
-          loadLibrary();
-          return;
-        }
-        
-        const continueWatchingRef = db.collection('continueWatching').doc(userId);
-        const doc = await continueWatchingRef.get();
-        
-        if (doc.exists) {
-          const items = doc.data().items || [];
-          let progressData = null;
-          
-          if (videoId) {
-            progressData = items.find(item => item.videoId === videoId);
-          } else if (seriesId && episodeId) {
-            progressData = items.find(item => 
-              item.seriesId === seriesId && item.episodeId === episodeId
-            );
-          }
-          
-          if (progressData) {
-            currentProgress = progressData.currentTime || 0;
-            isResuming = true;
-            
-            // Show progress info
-            progressInfo.style.display = 'flex';
-            progressBar.style.display = 'block';
-            progressBarFill.style.width = `${progressData.progress || 0}%`;
-            
-            const minutes = Math.floor(currentProgress / 60);
-            const seconds = Math.floor(currentProgress % 60);
-            resumeTime.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-          }
-        }
-        
-        loadLibrary();
-      } catch (error) {
-        console.error("Error loading resume progress:", error);
-        loadLibrary();
-      }
-    }
-
-    // Save progress to Firebase
-    async function saveProgress(videoData) {
-      try {
-        const continueWatchingRef = db.collection('continueWatching').doc(userId);
-        const doc = await continueWatchingRef.get();
-        
-        let items = [];
-        if (doc.exists) {
-          items = doc.data().items || [];
-        }
-        
-        // Remove if already exists
-        items = items.filter(item => {
-          if (videoData.type === 'series') {
-            return !(item.seriesId === videoData.seriesId && item.episodeId === videoData.episodeId);
-          } else {
-            return item.videoId !== videoData.videoId;
-          }
-        });
-        
-        // Add to beginning of array
-        items.unshift(videoData);
-        
-        // Keep only the last 10 items
-        if (items.length > 10) {
-          items = items.slice(0, 10);
-        }
-        
-        // Save to Firebase
-        await continueWatchingRef.set({ items });
-      } catch (error) {
-        console.error("Error saving progress:", error);
-      }
-    }
-
-    // Start tracking progress
-    function startProgressTracking(videoData) {
-      // Clear any existing interval
-      if (progressInterval) {
-        clearInterval(progressInterval);
-      }
-      
-      // Set up new interval to track progress
-      progressInterval = setInterval(async () => {
-        try {
-          // In a real app, you would get the current time from the video player
-          // For Drive preview, we can't access the iframe's currentTime due to cross-origin restrictions
-          // So we'll simulate progress by incrementing the time
-          
-          if (currentProgress < (videoData.duration || 3600)) {
-            currentProgress += 5; // Increment by 5 seconds
-            
-            // Calculate progress percentage
-            const progressPercent = (currentProgress / (videoData.duration || 3600)) * 100;
-            
-            // Update videoData with current progress
-            videoData.currentTime = currentProgress;
-            videoData.progress = Math.min(progressPercent, 100);
-            
-            // Save to Firebase (throttle this in a real app)
-            if (currentProgress % 30 === 0) { // Save every 30 seconds
-              await saveProgress(videoData);
-            }
-          } else {
-            // Video completed
-            clearInterval(progressInterval);
-            videoData.progress = 100;
-            await saveProgress(videoData);
-          }
-        } catch (error) {
-          console.error("Error tracking progress:", error);
-        }
-      }, 5000); // Update every 5 seconds
+      loadLibrary();
     }
 
     // Load library (Movies + Series folders)
@@ -866,33 +668,6 @@ const firebaseConfig = {
         });
         const files = res.result.files || [];
         renderLibrary(files);
-        
-        // Check URL parameters to auto-play content
-        const urlParams = new URLSearchParams(window.location.search);
-        const videoId = urlParams.get('video');
-        const seriesId = urlParams.get('series');
-        const episodeId = urlParams.get('episode');
-        
-        if (videoId) {
-          const video = files.find(f => f.id === videoId);
-          if (video) {
-            playStandalone(video.id, video.name, video.thumbnailLink);
-          }
-        } else if (seriesId) {
-          const series = files.find(f => f.id === seriesId);
-          if (series) {
-            await loadSeries(series.id, series.name);
-            
-            // Play specific episode if specified
-            if (episodeId) {
-              const episodeIndex = currentEpisodes.findIndex(ep => ep.id === episodeId);
-              if (episodeIndex !== -1) {
-                currentIndex = episodeIndex;
-                playEpisode(currentIndex);
-              }
-            }
-          }
-        }
         
         // Hide loading, show content
         loadingElement.style.display = 'none';
@@ -919,23 +694,31 @@ const firebaseConfig = {
         const isFolder = file.mimeType === "application/vnd.google-apps.folder";
         const thumbnailUrl = file.thumbnailLink || '';
         
+        // Check if we have progress for this item
+        const progress = getWatchProgress(file.id);
+        
         card.innerHTML = `
           <div class="card-thumb" style="background-image: ${thumbnailUrl ? `url(${thumbnailUrl})` : 'none'};">
             ${!thumbnailUrl ? `<i class="${isFolder ? 'fas fa-folder' : 'fas fa-play'} fa-2x"></i>` : ''}
+            ${progress > 0 ? `
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: ${progress}%"></div>
+              </div>
+            ` : ''}
             <div class="play-overlay">
               <i class="fas fa-play"></i>
             </div>
           </div>
           <div class="card-content">
             <h3 class="card-title">${file.name}</h3>
-            <p class="card-info">${isFolder ? 'Series' : 'Movie'}</p>
+            <p class="card-info">${isFolder ? 'Series' : 'Movie'} ${progress > 0 ? `• ${Math.round(progress)}% watched` : ''}</p>
           </div>
         `;
         
         if (isFolder) {
           card.onclick = () => loadSeries(file.id, file.name);
         } else {
-          card.onclick = () => playStandalone(file.id, file.name, file.thumbnailLink);
+          card.onclick = () => playStandalone(file.id, file.name);
         }
         
         list.appendChild(card);
@@ -958,7 +741,7 @@ const firebaseConfig = {
           return; 
         }
 
-        currentSeries = seriesName;
+        currentSeries = { id: folderId, name: seriesName };
         currentEpisodes = episodes.sort((a,b)=>a.name.localeCompare(b.name));
         currentIndex = 0;
         
@@ -966,10 +749,6 @@ const firebaseConfig = {
         sidebarTitle.textContent = seriesName;
         backButton.style.display = "flex";
         renderEpisodesSidebar();
-        
-        // Load progress for episodes
-        await loadEpisodesProgress();
-        
         playEpisode(currentIndex);
       } catch (e) {
         console.error(e);
@@ -977,45 +756,21 @@ const firebaseConfig = {
       }
     }
 
-    // Load progress for episodes
-    async function loadEpisodesProgress() {
-      try {
-        const continueWatchingRef = db.collection('continueWatching').doc(userId);
-        const doc = await continueWatchingRef.get();
-        
-        if (doc.exists) {
-          const items = doc.data().items || [];
-          
-          // Update episodes list with progress
-          const episodeCards = episodesList.querySelectorAll('.episode-card');
-          episodeCards.forEach((card, index) => {
-            const episodeId = currentEpisodes[index].id;
-            const progressData = items.find(item => 
-              item.seriesId === currentSeries && item.episodeId === episodeId
-            );
-            
-            if (progressData && progressData.progress < 100) {
-              const progressBar = document.createElement('div');
-              progressBar.className = 'episode-progress';
-              progressBar.innerHTML = `<div class="episode-progress-fill" style="width: ${progressData.progress}%"></div>`;
-              card.appendChild(progressBar);
-            }
-          });
-        }
-      } catch (error) {
-        console.error("Error loading episodes progress:", error);
-      }
-    }
-
     // Render episodes in sidebar
     function renderEpisodesSidebar() {
       episodesList.innerHTML = "";
       currentEpisodes.forEach((ep, i) => {
+        const progress = getWatchProgress(ep.id);
         const episodeCard = document.createElement("div");
         episodeCard.className = `episode-card ${i === currentIndex ? 'active' : ''}`;
         episodeCard.innerHTML = `
           <div class="episode-name">${ep.name}</div>
-          <div class="episode-meta">Episode ${i + 1}</div>
+          <div class="episode-meta">Episode ${i + 1} ${progress > 0 ? `• ${Math.round(progress)}% watched` : ''}</div>
+          ${progress > 0 ? `
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: ${progress}%"></div>
+            </div>
+          ` : ''}
         `;
         episodeCard.onclick = () => { 
           currentIndex = i; 
@@ -1035,37 +790,17 @@ const firebaseConfig = {
     function playEpisode(index) {
       const ep = currentEpisodes[index];
       if (!ep) return;
-      
-      let url = `https://drive.google.com/file/d/${ep.id}/preview`;
-      
-      // Add timestamp if resuming
-      if (isResuming && currentProgress > 0) {
-        url += `#t=${currentProgress}`;
-        isResuming = false;
-      }
-      
+      const url = `https://drive.google.com/file/d/${ep.id}/preview`;
       playerFrame.src = url;
       status.textContent = `Now playing: ${ep.name}`;
-      
-      // Start tracking progress
-      const videoData = {
-        type: 'series',
-        seriesId: currentSeries,
-        episodeId: ep.id,
-        title: `${currentSeries} - ${ep.name}`,
-        thumbnailUrl: ep.thumbnailLink || '',
-        duration: 3600, // Default duration (would get from API in a real app)
-        currentTime: currentProgress,
-        progress: (currentProgress / 3600) * 100,
-        timestamp: new Date()
-      };
-      
-      startProgressTracking(videoData);
       renderNextButton();
+      
+      // Start tracking watch progress
+      startTrackingProgress(ep.id, currentSeries ? currentSeries.id : null);
     }
 
     // Standalone movie
-    function playStandalone(fileId, name, thumbnailUrl) {
+    function playStandalone(fileId, name) {
       currentSeries = null;
       currentEpisodes = [];
       currentIndex = -1;
@@ -1075,31 +810,13 @@ const firebaseConfig = {
       backButton.style.display = "none";
       episodesList.innerHTML = "<div class='episode-card'>Select a series to view episodes</div>";
       
-      let url = `https://drive.google.com/file/d/${fileId}/preview`;
-      
-      // Add timestamp if resuming
-      if (isResuming && currentProgress > 0) {
-        url += `#t=${currentProgress}`;
-        isResuming = false;
-      }
-      
+      const url = `https://drive.google.com/file/d/${fileId}/preview`;
       playerFrame.src = url;
       status.textContent = `Now playing: ${name}`;
       nextControls.innerHTML = "";
       
-      // Start tracking progress
-      const videoData = {
-        type: 'movie',
-        videoId: fileId,
-        title: name,
-        thumbnailUrl: thumbnailUrl || '',
-        duration: 3600, // Default duration (would get from API in a real app)
-        currentTime: currentProgress,
-        progress: (currentProgress / 3600) * 100,
-        timestamp: new Date()
-      };
-      
-      startProgressTracking(videoData);
+      // Start tracking watch progress
+      startTrackingProgress(fileId, null);
     }
 
     // Next episode controls
@@ -1131,13 +848,6 @@ const firebaseConfig = {
       currentSeries = null;
       currentEpisodes = [];
       currentIndex = -1;
-      currentProgress = 0;
-      
-      // Clear progress tracking
-      if (progressInterval) {
-        clearInterval(progressInterval);
-        progressInterval = null;
-      }
       
       // Reset UI
       playerFrame.src = '';
@@ -1146,23 +856,66 @@ const firebaseConfig = {
       sidebarTitle.textContent = 'Library';
       backButton.style.display = 'none';
       episodesList.innerHTML = '<div class="episode-card">Select a series to view episodes</div>';
-      progressInfo.style.display = 'none';
-      progressBar.style.display = 'none';
+      
+      // Stop tracking progress
+      stopTrackingProgress();
       
       // Reload library
       loadLibrary();
     });
 
-    // Save progress when page is closed or navigated away from
-    window.addEventListener('beforeunload', () => {
-      if (progressInterval) {
-        clearInterval(progressInterval);
+    // Watch progress tracking functions
+    function startTrackingProgress(videoId, seriesId) {
+      // Clear any existing interval
+      stopTrackingProgress();
+      
+      // Set up new interval to track progress
+      watchProgressInterval = setInterval(() => {
+        // Simulate progress (in a real app, you would track actual progress)
+        // For demonstration, we'll just increment progress by 1% every 5 seconds
+        const currentProgress = getWatchProgress(videoId);
+        if (currentProgress < 100) {
+          saveWatchProgress(videoId, seriesId, currentProgress + 1);
+        } else {
+          stopTrackingProgress();
+        }
+      }, 5000); // Update every 5 seconds
+    }
+    
+    function stopTrackingProgress() {
+      if (watchProgressInterval) {
+        clearInterval(watchProgressInterval);
+        watchProgressInterval = null;
       }
-    });
+    }
+    
+    function saveWatchProgress(videoId, seriesId, progress) {
+      // Get existing progress data
+      let watchHistory = JSON.parse(localStorage.getItem('watchHistory') || '{}');
+      
+      // Update progress for this video
+      if (!watchHistory[videoId]) {
+        watchHistory[videoId] = {
+          progress: 0,
+          lastWatched: Date.now(),
+          seriesId: seriesId
+        };
+      }
+      
+      watchHistory[videoId].progress = progress;
+      watchHistory[videoId].lastWatched = Date.now();
+      
+      // Save back to localStorage
+      localStorage.setItem('watchHistory', JSON.stringify(watchHistory));
+    }
+    
+    function getWatchProgress(videoId) {
+      const watchHistory = JSON.parse(localStorage.getItem('watchHistory') || '{}');
+      return watchHistory[videoId] ? watchHistory[videoId].progress : 0;
+    }
 
     window.gapiLoaded = gapiLoaded;
   </script>
   <script async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>
 </body>
 </html>
-
