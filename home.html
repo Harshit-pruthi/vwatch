@@ -1,757 +1,354 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Drive Streamer - Home</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <title>Prime Video Clone</title>
+  <meta name="viewport" content="width=1024">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css?family=Inter:400,700&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --primary: #ff2c54;
-      --primary-dark: #e01e4c;
-      --secondary: #00a2ff;
-      --dark-bg: #0c0c0c;
-      --dark-card: #141414;
-      --dark-hover: #1f1f1f;
-      --text-primary: #ffffff;
-      --text-secondary: #a0a0a0;
-      --transition: all 0.3s ease;
-      --gradient: linear-gradient(135deg, var(--primary), var(--secondary));
-      --shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-      --radius: 12px;
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
     body {
-      font-family: 'Poppins', sans-serif;
-      background: var(--dark-bg);
-      color: var(--text-primary);
+      margin: 0;
+      font-family: Inter, Arial, sans-serif;
+      background: #171a22;
+      color: #f9fafb;
       overflow-x: hidden;
     }
-
-    /* Header Styles */
-    header {
+    .sidebar {
       position: fixed;
       top: 0;
       left: 0;
-      width: 100%;
+      width: 72px;
+      height: 100%;
+      background: #181b23;
+      box-shadow: 2px 0 24px #11101644;
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px 40px;
-      background: linear-gradient(to bottom, rgba(12, 12, 12, 0.95), transparent);
-      z-index: 1000;
-      transition: var(--transition);
+      flex-direction: column;
+      z-index: 10;
+      padding-top: 90px;
     }
-
-    header.scrolled {
-      background: rgba(12, 12, 12, 0.98);
-      backdrop-filter: blur(10px);
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    .sidebar img {
+      margin: 0 auto 32px auto;
+      width: 48px;
     }
-
-    .logo {
+    .nav {
+      margin: 24px 0;
       display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 28px;
-      font-weight: 700;
-      color: var(--text-primary);
+      flex-direction: column;
+      gap: 16px;
+      font-size: 17px;
+      letter-spacing: .05em;
+    }
+    .nav a {
+      color: #f9fafb;
       text-decoration: none;
-    }
-
-    .logo i {
-      color: var(--primary);
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 32px;
-    }
-
-    .nav-links a {
-      color: var(--text-primary);
-      text-decoration: none;
-      font-weight: 500;
-      font-size: 16px;
-      transition: var(--transition);
-      position: relative;
-    }
-
-    .nav-links a:after {
-      content: '';
-      position: absolute;
-      bottom: -5px;
-      left: 0;
-      width: 0;
-      height: 3px;
-      background: var(--gradient);
-      border-radius: 3px;
-      transition: var(--transition);
-    }
-
-    .nav-links a:hover:after {
-      width: 100%;
-    }
-
-    .user-actions {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-    }
-
-    .search-box {
-      position: relative;
-    }
-
-    .search-box input {
-      background: rgba(255, 255, 255, 0.1);
-      border: none;
-      border-radius: 20px;
-      padding: 10px 20px 10px 40px;
-      color: var(--text-primary);
-      width: 220px;
-      transition: var(--transition);
-    }
-
-    .search-box input:focus {
-      outline: none;
-      background: rgba(255, 255, 255, 0.15);
-      width: 260px;
-    }
-
-    .search-box i {
-      position: absolute;
-      left: 15px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--text-secondary);
-    }
-
-    .user-profile {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: var(--gradient);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: var(--transition);
-    }
-
-    .user-profile:hover {
-      transform: scale(1.05);
-    }
-
-    /* Hero Section */
-    .hero {
-      height: 70vh;
-      background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1489599102910-59206b8ca314?ixlib=rb-4.0.3') center/cover;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      padding: 10px 0;
       text-align: center;
-      padding: 0 20px;
-      margin-top: 80px;
-    }
-
-    .hero-content {
-      max-width: 800px;
-    }
-
-    .hero-title {
-      font-size: 48px;
-      font-weight: 700;
-      margin-bottom: 20px;
-      background: var(--gradient);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .hero-subtitle {
-      font-size: 18px;
-      color: var(--text-secondary);
-      margin-bottom: 30px;
-    }
-
-    .hero-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      padding: 14px 28px;
-      background: var(--gradient);
-      color: white;
-      border: none;
-      border-radius: 30px;
-      font-weight: 600;
-      font-size: 16px;
-      cursor: pointer;
-      transition: var(--transition);
-      box-shadow: 0 4px 15px rgba(255, 44, 84, 0.3);
-    }
-
-    .hero-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(255, 44, 84, 0.4);
-    }
-
-    /* Main Content */
-    .content-wrapper {
-      padding: 40px;
-    }
-
-    .library-section {
-      margin-bottom: 60px;
-    }
-
-    .section-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 30px;
-    }
-
-    .section-title {
-      font-size: 28px;
-      font-weight: 600;
-      position: relative;
-      padding-left: 15px;
-    }
-
-    .section-title:before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 5px;
-      height: 30px;
-      background: var(--gradient);
+      transition: background .18s;
       border-radius: 10px;
     }
-
-    .view-all {
-      color: var(--text-secondary);
-      text-decoration: none;
-      font-size: 14px;
-      transition: var(--transition);
+    .nav a.active, .nav a:hover {
+      background: #2231b2;
+      color: #fff;
     }
-
-    .view-all:hover {
-      color: var(--primary);
+    .main {
+      padding-left: 84px;
+      min-height: 100vh;
+      transition: padding-left .4s cubic-bezier(.4, .7, .4, 1.3);
     }
-
-    .content-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 25px;
-    }
-
-    .content-card {
-      background: var(--dark-card);
-      border-radius: var(--radius);
-      overflow: hidden;
-      transition: var(--transition);
-      cursor: pointer;
-      position: relative;
-      box-shadow: var(--shadow);
-    }
-
-    .content-card:hover {
-      transform: translateY(-10px) scale(1.02);
-    }
-
-    .card-thumb {
-      width: 100%;
-      height: 300px;
-      background: #222;
+    .header {
+      position: sticky;
+      top: 0;
+      background: #171a22;
+      height: 80px;
       display: flex;
       align-items: center;
-      justify-content: center;
-      color: var(--text-secondary);
+      justify-content: space-between;
+      z-index: 40;
+      border-bottom: 1px solid #23263c;
+      padding: 0 44px;
+      box-sizing: border-box;
+    }
+    .logo {
+      font-size: 2em;
+      font-weight: 700;
+      letter-spacing: .02em;
+      color: #2996ff;
+    }
+    .searchBox {
+      position: relative;
+      max-width: 450px;
+      width: 100%;
+    }
+    .searchBox input {
+      width: 100%;
+      padding: 12px 44px 12px 18px;
+      font-size: 18px;
+      border: none;
+      border-radius: 15px;
+      background: #282b34;
+      color: #eaf3ff;
+      outline: none;
+      box-shadow: 0 3px 12px #15172a20;
+      transition: background .2s;
+    }
+    .searchBox input:focus {
+      background: #303f5e;
+    }
+    .searchBox button {
+      position: absolute;
+      right: 8px;
+      top: 8px;
+      background: transparent;
+      border: none;
+      color: #2996ff;
+      font-size: 22px;
+      cursor: pointer;
+    }
+    .profile {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .profile img {
+      width: 36px;
+      border-radius: 50%;
+      margin-left: 12px;
+    }
+    .carousel {
+      position: relative;
+      max-width: 1100px;
+      margin: 40px auto 32px auto;
+      overflow: hidden;
+      border-radius: 16px;
+      box-shadow: 0 8px 48px #12122199;
+      aspect-ratio: 16/6;
+      background: #191a23;
+    }
+    .carousel-track {
+      display: flex;
+      transition: transform .7s cubic-bezier(.28, .72, .24, 1);
+    }
+    .carousel-slide {
+      min-width: 100%;
       position: relative;
       overflow: hidden;
+      aspect-ratio: 16/6;
     }
-
-    .card-thumb:after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
+    .carousel-slide img {
       width: 100%;
       height: 100%;
-      background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
-      opacity: 0;
-      transition: var(--transition);
+      object-fit: cover;
+      filter: contrast(1.06) brightness(.98);
+      transition: transform .7s cubic-bezier(.35, .75, .3, 1.2);
     }
-
-    .content-card:hover .card-thumb:after {
-      opacity: 1;
-    }
-
-    .play-overlay {
+    .carousel-caption {
       position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 60px;
-      height: 60px;
-      background: rgba(255, 255, 255, 0.2);
-      backdrop-filter: blur(10px);
-      border-radius: 50%;
+      left: 48px;
+      bottom: 36px;
+      background: rgba(26,31,43,0.85);
+      color: #fff;
+      padding: 18px 32px;
+      border-radius: 13px;
+      font-size: 1.5em;
+      box-shadow: 0 4px 32px #0006;
+      letter-spacing: .04em;
+    }
+    .carousel-controls {
+      position: absolute;
+      right: 14px;
+      bottom: 24px;
       display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
+      gap: 16px;
+    }
+    .carousel-controls button {
+      background: #2996ff;
+      border: none;
+      color: #fff;
       font-size: 20px;
-      opacity: 0;
-      transition: var(--transition);
-      z-index: 2;
+      border-radius: 130px;
+      width: 38px;
+      height: 38px;
+      cursor: pointer;
+      box-shadow: 0 2px 8px #161b2a50;
+      transition: background .2s;
     }
-
-    .content-card:hover .play-overlay {
-      opacity: 1;
+    .carousel-controls button:hover {
+      background: #195c98;
     }
-
-    .card-content {
-      padding: 20px;
+    .section {
+      max-width: 1100px;
+      margin: 0 auto 42px auto;
     }
-
-    .card-title {
+    .section-title {
+      font-size: 2em;
       font-weight: 600;
-      margin-bottom: 10px;
-      white-space: nowrap;
+      margin-bottom: 18px;
+      color: #e3f2ff;
+      letter-spacing: .03em;
+    }
+    .card-row {
+      display: grid;
+      gap: 22px;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+    .card {
+      background: #202434;
+      border-radius: 13px;
+      overflow: hidden;
+      box-shadow: 0 4px 17px #212c3311;
+      position: relative;
+      transition: box-shadow .2s, transform .23s cubic-bezier(.3,.84,.39,.98);
+    }
+    .card:hover {
+      transform: scale(1.035);
+      box-shadow: 0 8px 38px #1945a166;
+      z-index: 1;
+    }
+    .card img {
+      width: 100%;
+      aspect-ratio: 16/9;
+      object-fit: cover;
+    }
+    .card-title {
+      position: absolute;
+      left: 12px;
+      bottom: 10px;
+      font-size: 1.08em;
+      font-weight: 500;
+      color: #fff;
+      background: rgba(27,29,39,.72);
+      padding: 6px 14px;
+      border-radius: 8px;
+      letter-spacing: .02em;
+      max-width: 80%;
       overflow: hidden;
       text-overflow: ellipsis;
-      font-size: 18px;
+      white-space: nowrap;
     }
-
-    .card-info {
-      font-size: 14px;
-      color: var(--text-secondary);
-    }
-
-    /* Categories Section */
-    .categories {
-      display: flex;
-      gap: 15px;
-      margin-bottom: 40px;
-      flex-wrap: wrap;
-    }
-
-    .category-btn {
-      padding: 10px 20px;
-      background: rgba(255, 255, 255, 0.1);
-      border: none;
-      border-radius: 20px;
-      color: var(--text-primary);
-      cursor: pointer;
-      transition: var(--transition);
-    }
-
-    .category-btn.active, .category-btn:hover {
-      background: var(--gradient);
-    }
-
-    /* Loading animation */
-    .loading {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 50vh;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    .spinner {
-      width: 50px;
-      height: 50px;
-      border: 5px solid rgba(255, 255, 255, 0.1);
-      border-radius: 50%;
-      border-top: 5px solid var(--primary);
-      animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    /* Footer */
-    footer {
-      background: var(--dark-card);
-      padding: 40px;
-      text-align: center;
-      margin-top: 60px;
-    }
-
-    .footer-links {
-      display: flex;
-      justify-content: center;
-      gap: 30px;
-      margin-bottom: 20px;
-    }
-
-    .footer-links a {
-      color: var(--text-secondary);
-      text-decoration: none;
-      transition: var(--transition);
-    }
-
-    .footer-links a:hover {
-      color: var(--primary);
-    }
-
-    .copyright {
-      color: var(--text-secondary);
-      font-size: 14px;
-    }
-
-    /* Animations */
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
+    /* Simple fade animation */
     .fade-in {
-      animation: fadeIn 0.5s ease forwards;
+      animation: fadein .8s cubic-bezier(.2,.7,.41,.8);
     }
-
-    /* Responsive Design */
-    @media (max-width: 1200px) {
-      .content-grid {
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      }
-    }
-
-    @media (max-width: 992px) {
-      .hero-title {
-        font-size: 36px;
-      }
-    }
-
-    @media (max-width: 768px) {
-      header {
-        padding: 15px 20px;
-      }
-      
-      .nav-links {
-        display: none;
-      }
-      
-      .search-box input {
-        width: 160px;
-      }
-      
-      .search-box input:focus {
-        width: 180px;
-      }
-      
-      .content-wrapper {
-        padding: 20px;
-      }
-      
-      .hero {
-        height: 60vh;
-      }
-      
-      .hero-title {
-        font-size: 32px;
-      }
-      
-      .content-grid {
-        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-      }
-      
-      .card-thumb {
-        height: 220px;
-      }
-      
-      .categories {
-        gap: 10px;
-      }
-      
-      .category-btn {
-        padding: 8px 16px;
-        font-size: 14px;
-      }
+    @keyframes fadein {
+      from { opacity: 0; transform: translateY(12px);}
+      to { opacity: 1; transform: translateY(0);}
     }
   </style>
 </head>
 <body>
-  <header>
-    <a href="#" class="logo">
-      <i class="fas fa-play-circle"></i>
-      <span>DriveStream</span>
-    </a>
-    
-    <nav class="nav-links">
+  <aside class="sidebar">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/1/11/Amazon_Prime_Video_logo.svg" alt="Prime logo">
+    <nav class="nav">
       <a href="#" class="active">Home</a>
+      <a href="#">Store</a>
+      <a href="#">Live TV</a>
       <a href="#">Movies</a>
       <a href="#">TV Shows</a>
-      <a href="#">New</a>
-      <a href="#">My List</a>
+      <a href="#">Sports</a>
+      <a href="#">My Stuff</a>
     </nav>
-    
-    <div class="user-actions">
-      <div class="search-box">
-        <i class="fas fa-search"></i>
-        <input type="text" placeholder="Search...">
+  </aside>
+  <div class="main">
+    <header class="header fade-in">
+      <span class="logo">Prime Video</span>
+      <div class="searchBox">
+        <input type="text" id="search" placeholder="Search movies, shows, sports...">
+        <button title="Search">&#128270;</button>
       </div>
-      
-      <div class="user-profile">
-        <i class="fas fa-user"></i>
+      <div class="profile">
+        <span style="font-size: 1.2em;">Sign In</span>
+        <img src="https://randomuser.me/api/portraits/men/85.jpg" alt="profile">
       </div>
-    </div>
-  </header>
-
-  <div class="hero">
-    <div class="hero-content">
-      <h1 class="hero-title">Your Personal Streaming Service</h1>
-      <p class="hero-subtitle">Access all your Google Drive videos in one place with a beautiful interface</p>
-      <button class="hero-btn" onclick="scrollToContent()">
-        <i class="fas fa-play"></i>
-        Start Watching
-      </button>
-    </div>
-  </div>
-
-  <div class="content-wrapper">
-    <div class="categories">
-      <button class="category-btn active" data-category="all">All Content</button>
-      <button class="category-btn" data-category="series">Series</button>
-      <button class="category-btn" data-category="movies">Movies</button>
-      <button class="category-btn" data-category="recent">Recently Added</button>
-    </div>
-    
-    <div class="library-section">
-      <div class="section-header">
-        <h2 class="section-title">Your Library</h2>
-        <a href="#" class="view-all">View All</a>
-      </div>
-      
-      <div id="list" class="content-grid">
-        <div class="loading">
-          <div class="spinner"></div>
-          <p>Loading your content...</p>
+    </header>
+    <section class="carousel fade-in">
+      <div class="carousel-track" id="carouselTrack">
+        <div class="carousel-slide">
+          <img src="https://m.media-amazon.com/images/I/81EwxIgR-eL._AC_SL1500_.jpg" alt="Slide 1">
+          <div class="carousel-caption">Experience Amazon Originals now</div>
+        </div>
+        <div class="carousel-slide">
+          <img src="https://m.media-amazon.com/images/I/81QF1hELQSL._AC_SL1500_.jpg" alt="Slide 2">
+          <div class="carousel-caption">Watch trending movies & series</div>
+        </div>
+        <div class="carousel-slide">
+          <img src="https://m.media-amazon.com/images/I/81+zqzHbSrL._AC_SL1500_.jpg" alt="Slide 3">
+          <div class="carousel-caption">Live sports streaming</div>
         </div>
       </div>
-    </div>
-    
-    <div class="library-section">
-      <div class="section-header">
-        <h2 class="section-title">Recently Added</h2>
-        <a href="#" class="view-all">View All</a>
+      <div class="carousel-controls">
+        <button onclick="prevCarousel()">&larr;</button>
+        <button onclick="nextCarousel()">&rarr;</button>
       </div>
-      
-      <div id="recent-list" class="content-grid">
-        <!-- Recently added content will be loaded here -->
+    </section>
+    <section class="section fade-in" style="animation-delay:.15s;">
+      <div class="section-title">Trending Now</div>
+      <div class="card-row">
+        <div class="card">
+          <img src="https://m.media-amazon.com/images/I/61I4kVg5dDL._AC_SX466_.jpg" alt="Trending 1">
+          <div class="card-title">The Boys</div>
+        </div>
+        <div class="card">
+          <img src="https://m.media-amazon.com/images/I/81IC7NwjvKL._AC_SY679_.jpg" alt="Trending 2">
+          <div class="card-title">Reacher</div>
+        </div>
+        <div class="card">
+          <img src="https://m.media-amazon.com/images/I/91BUefTOrFL._AC_SY679_.jpg" alt="Trending 3">
+          <div class="card-title">Gen V</div>
+        </div>
+        <div class="card">
+          <img src="https://m.media-amazon.com/images/I/91BHUe4hKUL._AC_SY679_.jpg" alt="Trending 4">
+          <div class="card-title">Mirzapur</div>
+        </div>
       </div>
-    </div>
+    </section>
+    <section class="section fade-in" style="animation-delay:.2s;">
+      <div class="section-title">Recently Added</div>
+      <div class="card-row">
+        <div class="card">
+          <img src="https://m.media-amazon.com/images/I/71sCUi0DJRL._AC_SY679_.jpg" alt="Recent 1">
+          <div class="card-title">Citadel</div>
+        </div>
+        <div class="card">
+          <img src="https://m.media-amazon.com/images/I/817nv3VUfBL._AC_SY679_.jpg" alt="Recent 2">
+          <div class="card-title">Upload</div>
+        </div>
+        <div class="card">
+          <img src="https://m.media-amazon.com/images/I/61Fa085oLhL._AC_SY679_.jpg" alt="Recent 3">
+          <div class="card-title">Jailer</div>
+        </div>
+        <div class="card">
+          <img src="https://m.media-amazon.com/images/I/81hWg9XlgEL._AC_SY679_.jpg" alt="Recent 4">
+          <div class="card-title">Pathaan</div>
+        </div>
+      </div>
+    </section>
   </div>
-
-  <footer>
-    <div class="footer-links">
-      <a href="#">Home</a>
-      <a href="#">About</a>
-      <a href="#">Privacy Policy</a>
-      <a href="#">Terms of Service</a>
-      <a href="#">Contact</a>
-    </div>
-    <p class="copyright">© 2023 DriveStream. All rights reserved.</p>
-  </footer>
-
   <script>
-    // ==== CONFIG ====
-    const API_KEY   = "AIzaSyARMW-kuCFgiGQuvPx43XF4OoViAgP8IIg";
-    const FOLDER_ID = "1Yr8DpaxP66ZCi_NEoKclbh5BdieBhn0S"; // Main library folder
-
-    // Header scroll effect
-    window.addEventListener('scroll', () => {
-      const header = document.querySelector('header');
-      if (window.scrollY > 50) {
-        header.classList.add('scrolled');
-      } else {
-        header.classList.remove('scrolled');
-      }
-    });
-
-    // Scroll to content function
-    function scrollToContent() {
-      document.querySelector('.content-wrapper').scrollIntoView({ 
-        behavior: 'smooth' 
-      });
-    }
-
-    // Category filtering
-    document.querySelectorAll('.category-btn').forEach(button => {
-      button.addEventListener('click', () => {
-        document.querySelectorAll('.category-btn').forEach(btn => {
-          btn.classList.remove('active');
-        });
-        button.classList.add('active');
-        
-        // In a real app, you would filter content based on category
-        const category = button.getAttribute('data-category');
-        console.log(`Filtering by category: ${category}`);
-        // filterContent(category);
-      });
-    });
-
-    // Load GAPI
-    function gapiLoaded() { 
-      gapi.load('client', initClient); 
-    }
-
-    async function initClient() {
-      await gapi.client.init({ 
-        apiKey: API_KEY, 
-        discoveryDocs: ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"] 
-      });
-      loadLibrary();
-    }
-
-    // Load library (Movies + Series folders)
-    async function loadLibrary() {
-      try {
-        const res = await gapi.client.drive.files.list({
-          q: `'${FOLDER_ID}' in parents and trashed=false`,
-          fields: "files(id, name, mimeType, thumbnailLink, createdTime)",
-          orderBy: "name",
-        });
-        const files = res.result.files || [];
-        renderLibrary(files);
-        
-        // Also load recently added files
-        loadRecentlyAdded(files);
-      } catch (e) {
-        console.error("Drive API error", e);
-        document.getElementById('list').innerHTML = `
-          <div style="grid-column: 1 / -1; text-align: center; padding: 40px;">
-            <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: #ff2c54; margin-bottom: 20px;"></i>
-            <p>Error loading content. Please check your API key and folder ID.</p>
-          </div>
-        `;
+    // Carousel logic
+    let carouselIndex = 0
+    const track = document.getElementById('carouselTrack')
+    const slides = track.children
+    function showSlide(i){
+      carouselIndex = (i + slides.length) % slides.length
+      track.style.transform = `translateX(${-carouselIndex * 100}%)`
+      for(let j=0;j<slides.length;j++){
+        slides[j].querySelector('img').style.transform = (j===carouselIndex)?'scale(1.04)':'scale(1)'
       }
     }
-
-    // Load recently added files
-    function loadRecentlyAdded(files) {
-      const recentList = document.getElementById('recent-list');
-      const recentFiles = [...files]
-        .sort((a, b) => new Date(b.createdTime) - new Date(a.createdTime))
-        .slice(0, 6); // Get 6 most recent files
-      
-      if (recentFiles.length === 0) {
-        recentList.innerHTML = `
-          <div style="grid-column: 1 / -1; text-align: center; padding: 40px;">
-            <p>No recently added content.</p>
-          </div>
-        `;
-        return;
-      }
-      
-      recentList.innerHTML = '';
-      recentFiles.forEach((file, index) => {
-        const isFolder = file.mimeType === "application/vnd.google-apps.folder";
-        const thumbnailUrl = file.thumbnailLink || '';
-        
-        const card = document.createElement("div");
-        card.className = "content-card fade-in";
-        card.style.animationDelay = `${index * 0.1}s`;
-        
-        card.innerHTML = `
-          <div class="card-thumb" style="background-image: ${thumbnailUrl ? `url(${thumbnailUrl})` : 'none'};">
-            ${!thumbnailUrl ? `<i class="${isFolder ? 'fas fa-folder' : 'fas fa-play'} fa-2x"></i>` : ''}
-            <div class="play-overlay">
-              <i class="fas fa-play"></i>
-            </div>
-          </div>
-          <div class="card-content">
-            <h3 class="card-title">${file.name}</h3>
-            <p class="card-info">${isFolder ? 'Series' : 'Movie'} • ${formatDate(file.createdTime)}</p>
-          </div>
-        `;
-        
-        card.onclick = () => {
-          if (isFolder) {
-            // Navigate to series page
-            window.location.href = `streaming.html?series=${file.id}`;
-          } else {
-            // Play the video directly
-            window.location.href = `streaming.html?video=${file.id}`;
-          }
-        };
-        
-        recentList.appendChild(card);
-      });
-    }
-
-    function renderLibrary(files) {
-      const list = document.getElementById("list");
-      list.innerHTML = "";
-      
-      if (!files.length) {
-        list.innerHTML = `
-          <div style="grid-column: 1 / -1; text-align: center; padding: 40px;">
-            <i class="fas fa-folder-open" style="font-size: 48px; color: #ff2c54; margin-bottom: 20px;"></i>
-            <p>No files found in your Drive folder.</p>
-          </div>
-        `;
-        return;
-      }
-      
-      files.forEach((file, index) => {
-        const isFolder = file.mimeType === "application/vnd.google-apps.folder";
-        const thumbnailUrl = file.thumbnailLink || '';
-        
-        const card = document.createElement("div");
-        card.className = "content-card fade-in";
-        card.style.animationDelay = `${index * 0.1}s`;
-        
-        card.innerHTML = `
-          <div class="card-thumb" style="background-image: ${thumbnailUrl ? `url(${thumbnailUrl})` : 'none'};">
-            ${!thumbnailUrl ? `<i class="${isFolder ? 'fas fa-folder' : 'fas fa-play'} fa-2x"></i>` : ''}
-            <div class="play-overlay">
-              <i class="fas fa-play"></i>
-            </div>
-          </div>
-          <div class="card-content">
-            <h3 class="card-title">${file.name}</h3>
-            <p class="card-info">${isFolder ? 'Series' : 'Movie'}</p>
-          </div>
-        `;
-        
-        card.onclick = () => {
-          if (isFolder) {
-            // Navigate to series page
-            window.location.href = `streaming.html?series=${file.id}`;
-          } else {
-            // Play the video directly
-            window.location.href = `streaming.html?video=${file.id}`;
-          }
-        };
-        
-        list.appendChild(card);
-      });
-    }
-
-    // Format date function
-    function formatDate(dateString) {
-      const options = { year: 'numeric', month: 'short', day: 'numeric' };
-      return new Date(dateString).toLocaleDateString(undefined, options);
-    }
-
-    window.gapiLoaded = gapiLoaded;
+    function nextCarousel(){ showSlide(carouselIndex+1) }
+    function prevCarousel(){ showSlide(carouselIndex-1) }
+    // Auto-play
+    setInterval(()=>nextCarousel(), 5200)
+    showSlide(carouselIndex)
+    // Search animation
+    const searchInput = document.getElementById('search')
+    searchInput.addEventListener('focus', () => {
+      searchInput.style.background = '#283c54' 
+    })
+    searchInput.addEventListener('blur', () => {
+      searchInput.style.background = '#282b34'
+    })
   </script>
-  <script async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>
 </body>
 </html>
